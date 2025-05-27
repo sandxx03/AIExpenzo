@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -50,7 +50,7 @@ fun LoginScreen(navController: NavController){
     val errorMessage by viewModel.errorMessage.collectAsState()
     val context = LocalContext.current
 
-        Column(modifier = Modifier
+    Column(modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp).padding(top=70.dp),
             verticalArrangement = Arrangement.Top,
@@ -82,6 +82,7 @@ fun LoginScreen(navController: NavController){
                     focusedBorderColor = colorResource(R.color.navyblue),
                     unfocusedBorderColor = colorResource(R.color.lightblue)
 
+
                 )
 
             )
@@ -95,7 +96,8 @@ fun LoginScreen(navController: NavController){
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = colorResource(R.color.navyblue),
-                    unfocusedBorderColor = colorResource(R.color.lightblue))
+                    unfocusedBorderColor = colorResource(R.color.lightblue)
+                )
 
 
             )
@@ -110,7 +112,7 @@ fun LoginScreen(navController: NavController){
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = { navController.navigate("dashboard")}, // FOR TESTING PURPOSES
+            Button(onClick = {navController.navigate("prompt_monthlyIncome")}, // Todo: to integrate database stuff
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
@@ -134,7 +136,7 @@ fun LoginScreen(navController: NavController){
     LaunchedEffect (authSuccess){
         if (authSuccess){
             Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
-            navController.navigate("dashboard")
+            navController.navigate("prompt_monthlyIncome")
             viewModel.resetAuthStatus()
 
         }
