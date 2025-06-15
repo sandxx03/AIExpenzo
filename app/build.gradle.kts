@@ -49,7 +49,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+
 
     //my imports
     implementation ("androidx.compose.ui:ui:1.5.0")
@@ -58,6 +58,8 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-pager:0.34.0") // scrollable pages
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.32.0")
     implementation ("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.compose.material3:material3:1.3.1")
+
 
 
 

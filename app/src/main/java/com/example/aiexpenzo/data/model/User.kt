@@ -4,5 +4,7 @@ package com.example.aiexpenzo.data.model
 data class User(
     val name: String,
     val email: String,
-    val password: String
+    val password: String,
+    val monthlyIncome: Double = 0.0,
+    val monthlyBudget: Double = 0.0
 )
