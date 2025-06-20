@@ -1,5 +1,6 @@
 package com.example.aiexpenzo.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel // Android's ViewModel class - store and manage UI related data
 import com.example.aiexpenzo.data.model.User
 import com.example.aiexpenzo.data.repository.UserRepository
@@ -7,6 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow // StateFlow in Kotlin coroutines - reactive state management
 import kotlinx.coroutines.flow.asStateFlow
 import android.util.Patterns
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 class AuthViewModel:ViewModel() {
 
@@ -21,6 +24,10 @@ class AuthViewModel:ViewModel() {
 
     // public read-only state flow exposed to UI layer to observe errors
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    // COMMENT
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
     // Function: Sign Up - handles user registration
     fun signUp(name: String, email:String, password: String){
@@ -83,6 +90,7 @@ class AuthViewModel:ViewModel() {
         }
 
         val user = UserRepository.validateUser(email, password) // Calls the repository's validateUser function to validate user credentials
+        _currentUser.value =  user
 
         // if valid user returned, authSuccess = true
         if (user != null){
@@ -94,6 +102,24 @@ class AuthViewModel:ViewModel() {
         }
 
 
+    }
+
+    fun setMonthlyIncome(income: Float){
+        val user = _currentUser.value ?: UserRepository.getLoggedInUser()
+        if (user != null){
+            val updated = user.copy(monthlyIncome = income)
+            UserRepository.setLoggedInUser(updated)
+            _currentUser.value = updated
+        }
+    }
+
+    fun setMonthlyBudget(budget: Float){
+        val user = _currentUser.value ?: UserRepository.getLoggedInUser()
+        if (user != null){
+            val updated = user.copy(monthlyBudget = budget)
+            UserRepository.setLoggedInUser(updated)
+            _currentUser.value = updated
+        }
     }
 
     //Helpers
@@ -109,4 +135,13 @@ class AuthViewModel:ViewModel() {
     fun clearError(){
         _errorMessage.value = null
     }
+
+    // Function - validate value of monthly budget (should not be more than income)
+    fun isBudgetValid(budget: Float): Boolean{
+        val user = _currentUser.value ?: UserRepository.getLoggedInUser()
+        val income = user?.monthlyIncome ?: 0f
+        return budget <= income
+    }
+
+
 }

@@ -36,13 +36,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 
 @Composable
-fun SignUpScreen(navController: NavController){
+fun SignUpScreen(navController: NavController, viewModel: AuthViewModel){
     var name by remember{ mutableStateOf("")}
     var email by remember { mutableStateOf("") }
 
@@ -50,7 +49,6 @@ fun SignUpScreen(navController: NavController){
     val context = LocalContext.current
 
 
-    val viewModel: AuthViewModel = viewModel()  // viewmodel = AuthViewModel
     val authSuccess by viewModel.authSuccess.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 

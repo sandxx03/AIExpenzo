@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -29,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,15 +41,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.BottomNavBar
 import com.example.aiexpenzo.components.ExpenseListItem
-import com.example.aiexpenzo.components.NavBarItem
 import com.example.aiexpenzo.data.model.Expense
-import com.example.aiexpenzo.ui.theme.AIExpenzoTheme
+import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -70,214 +68,243 @@ private fun SheetOption(text: String, onClick:() -> Unit){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseListScreen(
+    navController: NavController,
+    viewModel: ExpenseViewModel,
     expensesByDate: Map<String, List<Expense>>,
     onManualAdd: () -> Unit,
     onStatementAdd: () -> Unit,
     onReceiptAdd: () -> Unit
 ) {
-    var selected by remember { mutableStateOf(NavBarItem.Expenses) }
+
 
     var showAddOptions by remember { mutableStateOf(false) }
 
-    // Fake current month selection
     var selectedMonth by remember { mutableStateOf(Calendar.getInstance()) }
     val monthFormatter = remember { SimpleDateFormat("MMM yyyy", Locale.getDefault()) }
-    val expensesExist = expensesByDate.isNotEmpty() && expensesByDate.any { it.value.isNotEmpty() }
 
+    val expensesByDate = viewModel.getExpensesForMonth(
+        month = selectedMonth.get(Calendar.MONTH),
+        year = selectedMonth.get(Calendar.YEAR)
+    )
+    val expensesExist = expensesByDate.isNotEmpty()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        Column(
+    Scaffold (
+        bottomBar = {BottomNavBar(navController)}
+    ){ innerPadding ->
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .padding(bottom = 80.dp)
+                .background(Color.White)
+                .padding(innerPadding)
 
         ) {
-            // Header
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Expense Log",
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                color = colorResource(R.color.navyblue),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 8.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 80.dp)
 
-            )
-
-            // Month Selector
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = {
-                    selectedMonth.add(Calendar.MONTH, -1)
-                }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Previous Month",
-                        tint = Color(0xFF113A49),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                Box(
-                    modifier = Modifier.background(Color(0xFF113A49), shape = CircleShape)
-                        .padding(horizontal = 14.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = monthFormatter.format(selectedMonth.time),
-                        color = Color.White,
-                        fontSize = 14.sp
-                    )
-                }
-                IconButton(onClick = {
-                    selectedMonth.add(Calendar.MONTH, 1)
-                }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Next Month",
-                        tint = Color(0xFF113A49),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-            // Chart placeholder
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .height(110.dp)
-                    .padding(horizontal = 30.dp)
-                    .background(Color.White),
-                contentAlignment = Alignment.Center
-            ) {
-                // To replace with chart
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Chart",
-                    modifier = Modifier.height(90.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (!expensesExist) {
-                // If there are no expenses added (empty)
-                Column(
+                // Header
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Expense Log",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = colorResource(R.color.navyblue),
+                    textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
-                        .padding(vertical = 40.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(top = 12.dp, bottom = 8.dp)
+
+                )
+
+                // Month Selector
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    IconButton(onClick = {
+                        selectedMonth = (selectedMonth.clone() as Calendar).apply {
+                            add(Calendar.MONTH, -1)
+                        }
+                    }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Previous Month",
+                            tint = Color(0xFF113A49),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Box(
+                        modifier = Modifier.background(Color(0xFF113A49), shape = CircleShape)
+                            .padding(horizontal = 14.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = monthFormatter.format(selectedMonth.time),
+                            color = Color.White,
+                            fontSize = 14.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    IconButton(onClick = {
+                        selectedMonth = (selectedMonth.clone() as Calendar).apply {
+                            add(Calendar.MONTH, +1)
+                        }
+                    }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Next Month",
+                            tint = Color(0xFF113A49),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+                // Chart placeholder
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(110.dp)
+                        .padding(horizontal = 30.dp)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // To replace with chart
                     Image(
-                        painter = painterResource(id = R.drawable.noexpensesadded),
-                        contentDescription = "No Expenses",
-                        modifier = Modifier.height(120.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "No expenses added yet.",
-                        color = Color.LightGray,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = "Chart",
+                        modifier = Modifier.height(90.dp)
                     )
                 }
-            } else {
-                // If expenses are added
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    expensesByDate.forEach { (date, expenses) ->
-                        item {
-                            Text(
-                                text = date,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFF113A49),
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Color(0xFFF0F7FA))
-                                    .padding(vertical = 8.dp, horizontal = 16.dp)
 
-                            )
-                        }
-                        items(expenses.size) { idx ->
-                            ExpenseListItem(expenses[idx])
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (!expensesExist) {
+                    // If there are no expenses added (empty)
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = 40.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.noexpensesadded),
+                            contentDescription = "No Expenses",
+                            modifier = Modifier.height(120.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "No expenses added yet.",
+                            color = Color.LightGray,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                } else {
+
+                    // If expenses are added
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+
+                        expensesByDate.forEach { (date, expenses) ->
+                            item {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = date,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF113A49),
+                                        fontWeight = FontWeight.Bold,
+
+                                    )
+                                    val totalAmount = expenses.sumOf { it.amount }
+                                    Text(
+                                        text = "$ %.2f".format(totalAmount),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color =  Color(0xFF113A49),
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                }
+
+                            }
+                            items(expenses.size) { idx ->
+                                ExpenseListItem(expenses[idx],
+                                    onClick = {
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("editable_expense", expenses[idx])
+                                        navController.navigate("edit_expense")
+                                    })
+                            }
                         }
                     }
+
+
                 }
 
-
             }
 
-        }
-
-        // FAB with modal bottom sheet
-        Box(
-            modifier = Modifier.fillMaxSize()
-                .padding(bottom = 98.dp, end = 20.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            FloatingActionButton(
-                onClick = { showAddOptions = true },
-                containerColor = colorResource(R.color.navyblue),
-                shape = CircleShape,
-                contentColor = Color.White
+            // FAB with modal bottom sheet
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .padding(bottom = 50.dp, end = 20.dp),
+                contentAlignment = Alignment.BottomEnd
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Expense")
-            }
-        }
-
-        if (showAddOptions) {
-            ModalBottomSheet(
-                onDismissRequest = { showAddOptions = false },
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-                tonalElevation = 2.dp,
-                containerColor = Color.White
-            ) {
-                Column(
-                    modifier = Modifier.padding(vertical = 8.dp)
+                FloatingActionButton(
+                    onClick = { showAddOptions = true },
+                    containerColor = colorResource(R.color.navyblue),
+                    shape = CircleShape,
+                    contentColor = Color.White
                 ) {
-                    SheetOption("Manual") {
-                        showAddOptions = false
-                        onManualAdd()
-                    }
-
-                    SheetOption("Pay Statement Notification Parsing") {
-                        showAddOptions = false
-                        onStatementAdd()
-                    }
-                    SheetOption("Receipt Scanner") {
-                        showAddOptions = false
-                        onReceiptAdd()
-                    }
-
+                    Icon(Icons.Default.Add, contentDescription = "Add Expense")
                 }
             }
-        }
 
-        //Bottom navigation
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 0.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            BottomNavBar(
-                selected = selected,
-                onItemSelected = { navBarItem -> selected = navBarItem },
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (showAddOptions) {
+                ModalBottomSheet(
+                    onDismissRequest = { showAddOptions = false },
+                    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+                    tonalElevation = 2.dp,
+                    containerColor = Color.White
+                ) {
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        SheetOption("Manual") {
+                            showAddOptions = false
+                            onManualAdd()
+                        }
+
+                        SheetOption("QR Pay Notification Parsing") {
+                            showAddOptions = false
+                            onStatementAdd()
+                        }
+                        SheetOption("Receipt Scanner") {
+                            showAddOptions = false
+                            onReceiptAdd()
+                        }
+
+                    }
+                }
+            }
+
+
         }
 
     }
+
+
+
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun ExpenseListScreenPreview(){
@@ -299,3 +326,5 @@ fun ExpenseListScreenPreview(){
         )
     }
 }
+
+ */

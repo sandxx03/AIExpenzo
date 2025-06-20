@@ -32,10 +32,12 @@ fun DropdownMenuBox(
             value = selectedOption,
             onValueChange = {},
             readOnly = true,
-            modifier = Modifier.fillMaxWidth()
-                .clickable { expanded = true },
+            modifier = modifier,
             trailingIcon = {
-                Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown Arrow")
+                Icon(
+                    Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown Arrow",
+                    modifier = Modifier.clickable { expanded = true })
             }
 
         )

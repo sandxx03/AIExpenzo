@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import com.example.aiexpenzo.R
 fun PopupPromptInput(
     promptText: String,
     placeholderText: String,
+    errorMessage: String? = null,
     onConfirm:(Float) -> Unit,
 
 ){
@@ -67,6 +69,19 @@ fun PopupPromptInput(
                 ,
                 shape = RoundedCornerShape(12.dp)
             )
+
+            // error message
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(start = 24.dp, top = 4.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.height(30.dp))
             Button(
                 onClick = {

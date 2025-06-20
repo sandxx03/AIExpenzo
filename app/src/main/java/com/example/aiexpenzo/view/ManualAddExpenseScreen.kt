@@ -1,10 +1,11 @@
 package com.example.aiexpenzo.view
 
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +15,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -35,14 +39,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.DropdownMenuBox
+import com.example.aiexpenzo.data.constants.EXPENSE_CATEGORIES
+import com.example.aiexpenzo.data.constants.PAYMENT_METHODS
 import com.example.aiexpenzo.data.model.Expense
 import com.example.aiexpenzo.util.DatePickerField
 
@@ -52,8 +58,11 @@ fun ManualAddExpenseScreen(
     initialExpense: Expense? = null,
     onBack:() -> Unit = {},
     onSave: (Expense) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    onDelete: ((Expense) -> Unit)? = null
 ){
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    val isEditing = initialExpense != null
     // State holders
     var amount by remember { mutableStateOf(initialExpense?.amount?.toString() ?: "")}
     var dateMillis by remember{ mutableStateOf(System.currentTimeMillis())}
@@ -65,21 +74,89 @@ fun ManualAddExpenseScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .verticalScroll(rememberScrollState())
 
     ){
         Row (
             modifier = Modifier.fillMaxWidth()
                 .statusBarsPadding()
-                .height(70.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .height(70.dp)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ){
-            IconButton(onClick = onBack) {
-                Icon(imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Back button and headder
+                IconButton(onClick = onBack) {
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back")
+                }
+                Spacer(Modifier.width((6.dp)))
+
+                Text(
+                    text = if (isEditing) "Edit Expense" else "Add Expense",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    color = colorResource(R.color.navyblue)
+                )
+
             }
-            Spacer(Modifier.width((6.dp)))
-            Text("Add Expenses", fontWeight = FontWeight.Bold, fontSize = 22.sp, color = colorResource(
-                R.color.navyblue)
+            // Delete button when editing expenses
+            if (isEditing && onDelete != null){
+                Text(
+                    text = "Delete",
+                    color = colorResource(R.color.darkred),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        showDeleteDialog = true
+                    }
+                        .padding(8.dp)
+                )
+            }
+
+        }
+
+        // Show delete dialog if user click on delete button
+        if (showDeleteDialog && initialExpense != null){
+            AlertDialog(
+                onDismissRequest = {showDeleteDialog = false},
+                title = { Text("Delete Expense?")},
+                text = { Text("Are you sure you want to delete this expense?")},
+
+                confirmButton = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(
+                            onClick = {
+                                showDeleteDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(R.color.navyblue)
+                            ),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Cancel", color = Color.White)
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Button(
+                            onClick = {
+                                showDeleteDialog = false
+                                onDelete?.invoke(initialExpense)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(R.color.darkred)
+                            ),
+                            modifier = Modifier.weight(1f)
+
+                        ) {
+                            Text("Delete", color = Color.White)
+                        }
+                    }
+
+                }
+
             )
         }
 
@@ -114,8 +191,11 @@ fun ManualAddExpenseScreen(
                     Spacer(Modifier.width(8.dp))
                     OutlinedTextField(
                         value = amount,
-                        onValueChange = {amount = it},
-                        placeholder = { Text("0.00", fontSize = 38.sp, color = Color.LightGray) },
+                        onValueChange = {
+                            if (it.matches(Regex("^\\d*\\.?\\d{0,2}$"))){
+                                amount = it}
+                                        },
+                        placeholder = { Text("0.00", fontSize = 38.sp, fontWeight = FontWeight.Bold,color = Color.LightGray) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -128,7 +208,7 @@ fun ManualAddExpenseScreen(
                             fontSize = 38.sp,
                             fontWeight = FontWeight.Bold
                         ),
-                        modifier = Modifier.width(140.dp)
+                        modifier = Modifier.fillMaxWidth()
 
                     )
                 }
@@ -161,21 +241,14 @@ fun ManualAddExpenseScreen(
 
             Row (verticalAlignment = Alignment.CenterVertically){
                 DropdownMenuBox(
-                    options = listOf("Housing", "Utilities", "Subscriptions (Media & Software)", "Food", "Transportation", "Health & Insurance", "Personal Care", "Education & Learning", "Entertainment & Leisure", "Shopping", "Gifts & Donations", "Pets", "Family & Children", "Debt Repayment", "Savings & Investments", "Other"),
+                    options = EXPENSE_CATEGORIES,
                     selectedOption = category,
                     onOptionSelected = {category = it},
                     modifier = Modifier.weight(1f)
 
                 )
                 Spacer(Modifier.width(10.dp))
-                Button(
-                    onClick = {/*TODO: Add New Category dialog*/},
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF222222)),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                    modifier = Modifier.height(44.dp)
-                ){
-                    Text("+", fontSize = 22.sp, color = Color.White)
-                }
+
             }
 
             Spacer(Modifier.height(18.dp))
@@ -183,7 +256,7 @@ fun ManualAddExpenseScreen(
             Text("PAYMENT METHOD", fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
             Spacer(Modifier.height(4.dp))
             DropdownMenuBox(
-                options = listOf("Cash", "Credit Card", "Debit Card", "e-Wallet", "Cheque"),
+                options = PAYMENT_METHODS,
                 selectedOption = paymentMethod,
                 onOptionSelected = {paymentMethod = it},
                 modifier = Modifier.fillMaxWidth()
@@ -196,7 +269,11 @@ fun ManualAddExpenseScreen(
             Spacer(Modifier.height(4.dp))
             OutlinedTextField(
                 value = description,
-                onValueChange = { description = it },
+                onValueChange = {
+                    if (it.length <=120){    // character limit
+                        description = it
+                    }
+                },
                 placeholder = { Text("Description/Remarks....") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -205,20 +282,23 @@ fun ManualAddExpenseScreen(
                     unfocusedBorderColor = Color.LightGray,
                     focusedBorderColor = Color.LightGray
                 ),
-                maxLines = 3
+                maxLines = 2
             )
         }
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(25.dp))
         // Buttons row
         Row(
             modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 30.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+
+
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.darkred)),
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(10.dp),
                 elevation = ButtonDefaults.buttonElevation(
@@ -227,21 +307,34 @@ fun ManualAddExpenseScreen(
                     focusedElevation = 4.dp
                 ),
             ) {
-                Text(text = "CANCEL", fontWeight = FontWeight.Bold)
+                Text(text = "CANCEL", fontWeight = FontWeight.Bold, color = colorResource(R.color.navyblue))
             }
             Spacer(Modifier.width(18.dp))
+
+            val isSaveEnabled = amount.isNotBlank() && category.isNotBlank()
+            val context = LocalContext.current
             Button(
                 onClick = {
                     val amt = amount.toDoubleOrNull()?: 0.0
+
+                    if (category.isBlank()){
+                        //Show a toast error message
+                        Toast.makeText(context, "Please select a category!", Toast.LENGTH_SHORT).show()
+                        return@Button
+
+                    }
                     onSave(
                         Expense(
+                            id = initialExpense?.id ?: System.currentTimeMillis(),  // important for viewModdel to match during update
                             description = description,
                             category = category,
                             paymentMethod = paymentMethod,
-                            amount = amt
+                            amount = amt,
+                            dateMillis = dateMillis
                         )
                     )
                 },
+                enabled = isSaveEnabled,
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.navyblue)),
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(10.dp),
@@ -258,6 +351,7 @@ fun ManualAddExpenseScreen(
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun ManualAddExpensePreview_Empty() {
@@ -267,3 +361,5 @@ fun ManualAddExpensePreview_Empty() {
         onCancel = {}
     )
 }
+
+ */

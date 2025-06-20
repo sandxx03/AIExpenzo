@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -37,18 +37,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 
 @Composable
-fun LoginScreen(navController: NavController){
+fun LoginScreen(navController: NavController, viewModel: AuthViewModel){
     var email by remember { mutableStateOf("")}
     var password by remember { mutableStateOf("")}
     val context = LocalContext.current
 
-    val viewModel: AuthViewModel = viewModel() // viewmodel = AuthViewModel
     val authSuccess by viewModel.authSuccess.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
@@ -63,7 +61,7 @@ fun LoginScreen(navController: NavController){
                 modifier = Modifier.fillMaxWidth()
                     .padding(bottom=40.dp)){
                 IconButton(onClick = {navController.navigate("onboarding")}) {
-                    Icon(imageVector = Icons.Default.ArrowBack,
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back")
                 }
                 Text(text="Login", fontSize = 20.sp, fontWeight = FontWeight.Bold, color= colorResource(R.color.navyblue),
@@ -141,9 +139,19 @@ fun LoginScreen(navController: NavController){
     LaunchedEffect (authSuccess){
         if (authSuccess){
             Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
-            navController.navigate("prompt_monthlyIncome"){
-                popUpTo("login"){ inclusive = true}
+            val user = viewModel.currentUser.value
+            if (user != null && (user.monthlyIncome == 0f || user.monthlyBudget == 0f)){
+                // If income or budget is not set (== 0f), prompt the user
+                navController.navigate("prompt_monthlyIncome"){
+                    popUpTo("login"){ inclusive = true}
+                }
+            }else{
+                // All info already set, go to dashboard
+                navController.navigate("dashboard") {
+                    popUpTo("login") { inclusive = true }
+                }
             }
+
             viewModel.resetAuthStatus()
         }
     }
