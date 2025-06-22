@@ -59,7 +59,7 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.32.0")
     implementation ("androidx.navigation:navigation-compose:2.7.5")
     implementation("androidx.compose.material3:material3:1.3.1")
-    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 
 

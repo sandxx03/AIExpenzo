@@ -30,7 +30,7 @@ fun AppNavHost(
         composable("signup") { SignUpScreen(navController, authViewModel) }
         composable("prompt_monthlyIncome"){ MonthlyIncomePromptScreen(navController, authViewModel) }
         composable("prompt_monthlyBudget"){ MonthlyBudgetPromptScreen(navController, authViewModel) }
-        composable(BottomNavBarItem.Home.route) { DashboardScreen(navController, authViewModel) }
+        composable(BottomNavBarItem.Home.route) { DashboardScreen(navController, authViewModel, expenseViewModel) }
 
         // TODO: placeholder for demo
         val mockExpenses = mapOf<String, List<Expense>>()

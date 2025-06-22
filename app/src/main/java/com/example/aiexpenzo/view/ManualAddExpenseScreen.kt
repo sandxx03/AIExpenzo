@@ -86,7 +86,7 @@ fun ManualAddExpenseScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ){
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Back button and headder
+                // Back button and header
                 IconButton(onClick = onBack) {
                     Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back")

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.BottomNavBar
+import com.example.aiexpenzo.components.DailyLineChart
 import com.example.aiexpenzo.components.ExpenseListItem
 import com.example.aiexpenzo.data.model.Expense
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
@@ -88,6 +90,11 @@ fun ExpenseListScreen(
     )
     val expensesExist = expensesByDate.isNotEmpty()
 
+    val dailyTotals = viewModel.getDailyTotalsForMonth(
+        month = selectedMonth.get(Calendar.MONTH),
+        year = selectedMonth.get(Calendar.YEAR)
+    )
+
     Scaffold (
         bottomBar = {BottomNavBar(navController)}
     ){ innerPadding ->
@@ -101,8 +108,7 @@ fun ExpenseListScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 80.dp)
+                    .fillMaxHeight()    // not fillMaxSize() because will exceed bounds if innerPadding not respected
 
             ) {
                 // Header
@@ -164,19 +170,19 @@ fun ExpenseListScreen(
                         )
                     }
                 }
-                // Chart placeholder
+                // Line Chart
                 Box(
                     modifier = Modifier.fillMaxWidth()
-                        .height(110.dp)
+                        .height(250.dp)
                         .padding(horizontal = 30.dp)
                         .background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
-                    // To replace with chart
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "Chart",
-                        modifier = Modifier.height(90.dp)
+                    DailyLineChart(
+                        modifier = Modifier.fillMaxWidth()
+                            .height(250.dp)
+                            .padding(horizontal = 16.dp),
+                        dailyTotals = dailyTotals
                     )
                 }
 
