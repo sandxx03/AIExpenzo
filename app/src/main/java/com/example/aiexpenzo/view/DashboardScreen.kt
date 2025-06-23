@@ -39,13 +39,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.BottomNavBar
+import com.example.aiexpenzo.components.EditValueDialog
 import com.example.aiexpenzo.data.constants.CategoryIconMap
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
@@ -68,6 +68,8 @@ fun DashboardScreen(
     val name = user?.name ?: ""
     val monthlyIncome = user?.monthlyIncome?: 0f
     val monthlyBudget = user?.monthlyBudget ?: 0f
+    var showEditIncomeDialog by remember { mutableStateOf(false) }
+    var showEditBudgetDialog by remember { mutableStateOf(false) }
 
     var selectedMonth by remember { mutableStateOf(Calendar.getInstance()) }
 
@@ -153,15 +155,45 @@ fun DashboardScreen(
 
                 // Money In/Out & progress bar
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
 
-                        Text("Money In", fontSize = 12.sp, color = colorResource(R.color.navyblue))
+                        Row(verticalAlignment = Alignment.CenterVertically,
+
+                        ) {
+                            // Edit button
+                            IconButton(
+                                onClick = {showEditIncomeDialog = true},
+                                modifier = Modifier.size(30.dp)) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_edit),
+                                    contentDescription = "Edit Income",
+                                    tint = colorResource(R.color.navyblue),
+                                    modifier = Modifier.size(25.dp)
+                                        .padding(end = 8.dp )
+                                )
+                            }
+
+                            Text("Money In", fontSize = 12.sp, color = colorResource(R.color.navyblue))
+
+
+                        }
+                        if (showEditIncomeDialog){
+                            EditValueDialog(
+                                title = "Edit Monthly Income",
+                                currentValue = monthlyIncome,
+                                onConfirm = { authViewModel.setMonthlyIncome(it) },
+                                onDismiss = {showEditIncomeDialog = false}
+                            )
+                        }
+
                         Text(
                             "$${String.format("%,.2f", monthlyIncome)}",
                             fontWeight = FontWeight.Bold,
@@ -171,10 +203,10 @@ fun DashboardScreen(
 
                     }
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-
                         Text("Money Out", fontSize = 12.sp, color = colorResource(R.color.navyblue))
+
                         Text(
                             "-$${String.format("%,.2f", moneyOut)}",
                             fontWeight = FontWeight.Bold,
@@ -267,7 +299,7 @@ fun DashboardScreen(
                             verticalAlignment = Alignment.CenterVertically,
 
                             ) {
-                            // Placeholder for circle icon
+                            // circle icon
                             Box(
                                 modifier = Modifier.weight(0.8f)
                                     .background(Color.Transparent),
@@ -282,16 +314,46 @@ fun DashboardScreen(
 
                             }
 
+
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(
                                 modifier = Modifier.weight(1f)
                                     .padding(start =16.dp, end = 8.dp)
                             ){
-                                Text(
-                                    "Monthly Budget",
-                                    fontSize = 13.sp,
-                                    color = colorResource(R.color.navyblue)
-                                )
+                                Row (verticalAlignment = Alignment.CenterVertically){
+                                    // Edit button
+                                    IconButton(onClick = {showEditBudgetDialog = true},
+                                        modifier = Modifier.size(30.dp)) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_edit),
+                                            contentDescription = "Edit Income",
+                                            tint = colorResource(R.color.navyblue),
+                                            modifier = Modifier
+                                                .size(25.dp)
+                                                .padding(end = 8.dp)
+                                        )
+                                    }
+                                    Text(
+                                        "Monthly Budget",
+                                        fontSize = 13.sp,
+                                        color = colorResource(R.color.navyblue)
+                                    )
+
+
+                                }
+
+                                if (showEditBudgetDialog) {
+                                    EditValueDialog(
+                                        title = "Edit Monthly Budget",
+                                        currentValue = monthlyBudget,
+                                        onConfirm = { authViewModel.setMonthlyBudget(it)},
+                                        validate = {authViewModel.isBudgetValid(it)},
+                                        errorMessage = "Budget cannot exceed income.",
+                                        onDismiss = { showEditBudgetDialog = false }
+
+                                    )
+                                }
+
                                 Text(
                                     "$${String.format("%,.2f", monthlyBudget)}",
                                     color = colorResource(R.color.navyblue),
@@ -425,6 +487,7 @@ fun DashboardScreen(
 
         }
     }
+
 
 
 
