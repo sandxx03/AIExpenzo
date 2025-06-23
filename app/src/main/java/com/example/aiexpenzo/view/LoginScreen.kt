@@ -136,6 +136,13 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel){
             )
 
         }
+    LaunchedEffect(viewModel.authSuccess.collectAsState().value) {
+        if (viewModel.authSuccess.value && viewModel.currentUser.value != null) {
+            navController.navigate("dashboard") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
     LaunchedEffect (authSuccess){
         if (authSuccess){
             Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()

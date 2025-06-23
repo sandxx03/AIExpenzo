@@ -3,26 +3,39 @@ package com.example.aiexpenzo.data.repository
 import com.example.aiexpenzo.data.model.User
 
 object UserRepository {
-    private val users = mutableListOf<User>()
+    private val users = mutableMapOf<String, User>()
     private var loggedInUser: User? = null
 
     fun addUser(user: User): Boolean{
-        if (users.any{ it.email == user.email}) return false // checks whether email is unique
-        users.add(user)
+        if (users.containsKey(user.email)) return false
+        users[user.email] = user
         return true
     }
 
     fun validateUser(email: String, password: String): User?{
-        val user = return users.find { it.email == email && it.password == password }
-        loggedInUser = user
-        return user
+        val user = users[email]
+        return if (user?.password == password) {
+            loggedInUser = user
+            user
+        } else null
     }
 
     fun getLoggedInUser(): User? = loggedInUser
 
     fun setLoggedInUser(user:User){
+
+        // Remove old user if email changed
+        val oldEmail = loggedInUser?.email
+        if (oldEmail != null && oldEmail != user.email) {
+            users.remove(oldEmail)
+        }
+        if (user.email != oldEmail && users.containsKey(user.email)) return
+
+        users[user.email] = user
         loggedInUser = user
-        //Update list in mock
-        users.replaceAll{if (it.email == user.email) user else it}
+    }
+
+    fun clearLoggedInUser() {
+        loggedInUser = null
     }
 }

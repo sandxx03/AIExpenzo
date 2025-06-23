@@ -7,12 +7,14 @@ import androidx.navigation.compose.composable
 import com.example.aiexpenzo.components.BottomNavBarItem
 import com.example.aiexpenzo.data.model.Expense
 import com.example.aiexpenzo.view.DashboardScreen
+import com.example.aiexpenzo.view.EditProfileScreen
 import com.example.aiexpenzo.view.ExpenseListScreen
 import com.example.aiexpenzo.view.LoginScreen
 import com.example.aiexpenzo.view.ManualAddExpenseScreen
 import com.example.aiexpenzo.view.MonthlyBudgetPromptScreen
 import com.example.aiexpenzo.view.MonthlyIncomePromptScreen
 import com.example.aiexpenzo.view.OnboardingScreen
+import com.example.aiexpenzo.view.ProfileScreen
 import com.example.aiexpenzo.view.SignUpScreen
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
@@ -90,6 +92,61 @@ fun AppNavHost(
 
 
         composable(BottomNavBarItem.Analyzer.route){}
-        composable(BottomNavBarItem.Profile.route){}
+
+        // Navigate to Profile & Settings Screen
+        composable(BottomNavBarItem.Profile.route){
+            ProfileScreen(
+           navController = navController,
+                viewModel = authViewModel,
+                onLogOut = {
+                    authViewModel.logout()
+                navController.navigate("login"){
+                    popUpTo("dashboard") { inclusive = true }
+                }
+                    navController
+                        .currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("toast_message", "You have been logged out successfully.")
+
+                }
+            )}
+
+
+        composable("edit_profile") {
+            EditProfileScreen(navController = navController, viewModel = authViewModel,
+                onCancel = {navController.popBackStack()},
+                onSave = { newName, newEmail, newPassword ->
+                    val validationError = authViewModel.validateProfileInput(newName, newEmail, newPassword)
+                    if (validationError != null) {
+                        navController
+                            .currentBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("toast_message", validationError)
+                        return@EditProfileScreen
+                    }
+
+                    val oldUser = authViewModel.currentUser.value
+                    authViewModel.updateUsername(newName)
+                    authViewModel.updateEmail(newEmail)
+                    authViewModel.updatePassword(newPassword)
+
+                    val oldEmail = oldUser?.email ?: ""
+                    val oldPassword = oldUser?.password ?: ""
+
+                    if (newEmail != oldEmail || newPassword != oldPassword) {
+                        authViewModel.logout()
+                        navController.navigate("login") {
+                            popUpTo("dashboard") { inclusive = true }
+                        }
+                        navController
+                            .currentBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("toast_message", "Profile updated. Please log in with your new credentials.")
+                    } else {
+                        navController.popBackStack()
+
+                    }
+                }
+            )}
     }
 }

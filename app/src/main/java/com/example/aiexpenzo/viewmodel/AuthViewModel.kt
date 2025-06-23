@@ -1,15 +1,12 @@
 package com.example.aiexpenzo.viewmodel
 
-import android.content.Context
-import androidx.lifecycle.ViewModel // Android's ViewModel class - store and manage UI related data
+import android.util.Patterns
+import androidx.lifecycle.ViewModel
 import com.example.aiexpenzo.data.model.User
 import com.example.aiexpenzo.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow // StateFlow in Kotlin coroutines - reactive state management
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import android.util.Patterns
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 
 class AuthViewModel:ViewModel() {
 
@@ -32,27 +29,13 @@ class AuthViewModel:ViewModel() {
     // Function: Sign Up - handles user registration
     fun signUp(name: String, email:String, password: String){
         // Validation check: If any field is empty, sets error message & authSuccess to false
-        if (name.isBlank() || email.isBlank() || password.isBlank()){
-            _errorMessage.value = "Please fill in all the fields."
-            _authSuccess.value = false
-            return  // returns early if validation fails
-        }
-
-        // Validation check: If email format is incorrect, sets error message & authSuccess to false
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            _errorMessage.value="Please enter a valid email address."
+        val validationError = validateProfileInput(name, email, password)
+        if (validationError != null){
+            _errorMessage.value = validationError
             _authSuccess.value = false
             return
+
         }
-
-        // Validation check: If password length < 6 characters, sets error message & authSuccess to false
-        if (password.length <6){
-            _errorMessage.value = "Password must be at least 6 characters."
-            _authSuccess.value = false
-            return
-        }
-
-
         val user = User(name, email, password)   // Creates new User object with the attributes
         val result = UserRepository.addUser(user)   // Calls repository to add user
 
@@ -104,6 +87,7 @@ class AuthViewModel:ViewModel() {
 
     }
 
+    // Function: Set Monthly Income
     fun setMonthlyIncome(income: Float){
         val user = _currentUser.value ?: UserRepository.getLoggedInUser()
         if (user != null){
@@ -113,6 +97,7 @@ class AuthViewModel:ViewModel() {
         }
     }
 
+    // Function: Set Monthly Budget
     fun setMonthlyBudget(budget: Float){
         val user = _currentUser.value ?: UserRepository.getLoggedInUser()
         if (user != null){
@@ -121,6 +106,44 @@ class AuthViewModel:ViewModel() {
             _currentUser.value = updated
         }
     }
+
+    fun validateProfileInput(name: String, email: String, password: String): String? {
+        return when {
+            name.isBlank() || email.isBlank() || password.isBlank() ->
+                "Please fill in all the fields."
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() ->
+                "Please enter a valid email address."
+            password.length < 6 ->
+                "Password must be at least 6 characters."
+            else -> null // No errors
+        }
+    }
+
+    // Function: Update Username
+    fun updateUsername(newName: String){
+        val user = _currentUser.value ?: return
+        val updatedUser = user.copy(name = newName)
+        _currentUser.value = updatedUser
+        UserRepository.setLoggedInUser(updatedUser)
+    }
+
+    // Function: Update Email
+    fun updateEmail(newEmail: String){
+        val user = _currentUser.value ?: return
+        val updatedUser = user.copy(email = newEmail)
+        _currentUser.value = updatedUser
+        UserRepository.setLoggedInUser(updatedUser)
+    }
+
+    // Function: Update Password
+    fun updatePassword(newPassword: String){
+        val user = _currentUser.value ?: return
+        val updatedUser = user.copy(password = newPassword)
+        _currentUser.value = updatedUser
+        UserRepository.setLoggedInUser(updatedUser)
+    }
+
+
 
     //Helpers
 
@@ -142,6 +165,15 @@ class AuthViewModel:ViewModel() {
         val income = user?.monthlyIncome ?: 0f
         return budget <= income
     }
+
+    // Function - log users out
+    fun logout(){
+        _currentUser.value = null
+        _authSuccess.value = false
+        UserRepository.clearLoggedInUser()
+    }
+
+
 
 
 }
