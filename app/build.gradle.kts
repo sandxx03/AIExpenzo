@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -60,6 +61,9 @@ dependencies {
     implementation ("androidx.navigation:navigation-compose:2.7.5")
     implementation("androidx.compose.material3:material3:1.3.1")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
 
 
 

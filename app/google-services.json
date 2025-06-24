@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "251625137070",
+    "project_id": "aiexpenzo-1741c",
+    "storage_bucket": "aiexpenzo-1741c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251625137070:android:ebc6e0b974ce832d6bde3f",
+        "android_client_info": {
+          "package_name": "com.example.aiexpenzo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdo11ZTjRBUcj6qbz0fTbIXJakk7sfqFU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
