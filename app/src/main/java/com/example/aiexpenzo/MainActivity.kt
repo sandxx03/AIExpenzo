@@ -10,10 +10,12 @@ import com.example.aiexpenzo.navigation.AppNavHost
 import com.example.aiexpenzo.ui.theme.AIExpenzoTheme
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
 
         enableEdgeToEdge()
 

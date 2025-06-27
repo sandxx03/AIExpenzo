@@ -1,6 +1,7 @@
 package com.example.aiexpenzo.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,21 +27,28 @@ fun AppNavHost(
     authViewModel: AuthViewModel,
     expenseViewModel: ExpenseViewModel
 ){
-    NavHost(navController, startDestination = "onboarding") {
+
+
+    NavHost(
+        navController = navController,
+        startDestination = "onboarding"
+    ) {
+
         composable("onboarding") { OnboardingScreen(navController) }
         composable("login") { LoginScreen(navController, authViewModel) }
         composable("signup") { SignUpScreen(navController, authViewModel) }
         composable("prompt_monthlyIncome"){ MonthlyIncomePromptScreen(navController, authViewModel) }
         composable("prompt_monthlyBudget"){ MonthlyBudgetPromptScreen(navController, authViewModel) }
+
+
+        // Bottom Nav Bar Screens
         composable(BottomNavBarItem.Home.route) { DashboardScreen(navController, authViewModel, expenseViewModel) }
 
-        // TODO: placeholder for demo
-        val mockExpenses = mapOf<String, List<Expense>>()
+
         composable(BottomNavBarItem.Expenses.route){
             ExpenseListScreen(
                 navController = navController,
                 viewModel = expenseViewModel,
-                expensesByDate = mockExpenses,
                 onManualAdd = { navController.navigate("add_expense") },
                 onStatementAdd = { /* navigate to statement parsing */ },
                 onReceiptAdd = { /* navigate to receipt scan */ }
@@ -86,8 +94,7 @@ fun AppNavHost(
                 )
 
             }
-
-
+            
         }
 
 
@@ -100,8 +107,8 @@ fun AppNavHost(
                 viewModel = authViewModel,
                 onLogOut = {
                     authViewModel.logout()
-                navController.navigate("login"){
-                    popUpTo("dashboard") { inclusive = true }
+                    navController.navigate("login"){
+                        popUpTo("dashboard") { inclusive = true }
                 }
                     navController
                         .currentBackStackEntry

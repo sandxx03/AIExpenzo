@@ -31,6 +31,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,24 +74,24 @@ private fun SheetOption(text: String, onClick:() -> Unit){
 fun ExpenseListScreen(
     navController: NavController,
     viewModel: ExpenseViewModel,
-    expensesByDate: Map<String, List<Expense>>,
     onManualAdd: () -> Unit,
     onStatementAdd: () -> Unit,
     onReceiptAdd: () -> Unit
 ) {
-
+    val expenses by viewModel.allExpense.collectAsState()
 
     var showAddOptions by remember { mutableStateOf(false) }
-
     var selectedMonth by remember { mutableStateOf(Calendar.getInstance()) }
     val monthFormatter = remember { SimpleDateFormat("MMM yyyy", Locale.getDefault()) }
 
-    val expensesByDate = viewModel.getExpensesForMonth(
-        month = selectedMonth.get(Calendar.MONTH),
-        year = selectedMonth.get(Calendar.YEAR)
-    )
-    val expensesExist = expensesByDate.isNotEmpty()
+    val expensesByDate = remember(selectedMonth) {
+        viewModel.getExpensesForMonth(
+            month = selectedMonth.get(Calendar.MONTH),
+            year = selectedMonth.get(Calendar.YEAR)
+        )
+    }
 
+    val expensesExist = expensesByDate.isNotEmpty()
     val dailyTotals = viewModel.getDailyTotalsForMonth(
         month = selectedMonth.get(Calendar.MONTH),
         year = selectedMonth.get(Calendar.YEAR)
@@ -304,6 +306,9 @@ fun ExpenseListScreen(
 
         }
 
+    }
+    LaunchedEffect(Unit) {
+        viewModel.loadExpensesFromFirebase()
     }
 
 

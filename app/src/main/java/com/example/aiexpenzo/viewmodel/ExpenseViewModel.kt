@@ -1,33 +1,86 @@
 package com.example.aiexpenzo.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.aiexpenzo.data.firebase.FirebaseService.auth
+import com.example.aiexpenzo.data.firebase.FirebaseService.firestore
 import com.example.aiexpenzo.data.model.CategorySpend
 import com.example.aiexpenzo.data.model.Expense
+import com.example.aiexpenzo.data.repository.FirestoreExpenseRepository
+import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class ExpenseViewModel: ViewModel() {
-    private val _allExpenses = mutableStateListOf<Expense>()
+    private val _allExpenses = MutableStateFlow<List<Expense>>(emptyList())
+    val allExpense: StateFlow<List<Expense>> = _allExpenses.asStateFlow()
+
+    // Loading state
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private var expensesListener: ListenerRegistration? = null
+
+    init {
+        setupExpenseListener()
+    }
+
+    private fun setupExpenseListener(){
+        expensesListener?.remove()
+        val uid = auth.currentUser?.uid ?: return
+
+        expensesListener = firestore
+            .collection("users").document(uid)
+            .collection("expenses")
+            .addSnapshotListener{ snapshot, error ->
+                if (error != null) return@addSnapshotListener
+                _allExpenses.value = snapshot?.toObjects(Expense::class.java) ?: emptyList()
+            }
+    }
+
+    override fun onCleared() {
+        expensesListener?.remove()
+        super.onCleared()
+    }
+    fun loadExpensesFromFirebase(){
+        viewModelScope.launch {
+            _allExpenses.value = FirestoreExpenseRepository.getAllExpenses()
+
+        }
+    }
 
     fun addExpense(expense: Expense){
-        _allExpenses.add(expense)
+        viewModelScope.launch {
+            FirestoreExpenseRepository.addExpense(expense)
+
+
+        }
+    }
+
+    // Function - delete Expense Item
+    fun removeExpense(expense: Expense){
+       viewModelScope.launch {
+           FirestoreExpenseRepository.deleteExpense(expense.id)
+
+       }
     }
 
     fun getExpensesForMonth(month: Int, year:Int): Map<String, List<Expense>>{
         val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
 
-        return _allExpenses
-            .filter {
-                val cal = Calendar.getInstance()
-                cal.timeInMillis = it.dateMillis
+        return _allExpenses.value
+            .filter { expense ->
+                val cal = Calendar.getInstance().apply { time = expense.transactionDate }
                 cal.get(Calendar.MONTH) == month && cal.get(Calendar.YEAR) == year
             }
-            .sortedByDescending { it.dateMillis }
+            .sortedByDescending { it.transactionDate.time }
             .groupBy { expense ->
-                formatter.format(Date(expense.dateMillis))
+                formatter.format(expense.transactionDate)
             }
 
     }
@@ -38,16 +91,13 @@ class ExpenseViewModel: ViewModel() {
 
     // Function - update Expense Item when edited
     fun updateExpense(updatedExpense:Expense){
-        val index = _allExpenses.indexOfFirst { it.id == updatedExpense.id }
-        if (index != -1){
-            _allExpenses[index] = updatedExpense
+        viewModelScope.launch {
+            FirestoreExpenseRepository.updateExpense(updatedExpense)
+            loadExpensesFromFirebase()
         }
+
     }
 
-    // Function - delete Expense Item
-    fun removeExpense(expense: Expense){
-        _allExpenses.removeIf{it.id == expense.id}
-    }
 
     // Function - get Expense Data for Chart
     fun getDailyTotalsForMonth(month: Int, year: Int): List<Float>{
@@ -58,8 +108,8 @@ class ExpenseViewModel: ViewModel() {
 
         val totals = MutableList(daysInMonth){ 0f }
 
-        _allExpenses.forEach { expense ->
-            val cal = Calendar.getInstance().apply{timeInMillis = expense.dateMillis}
+        _allExpenses.value.forEach { expense ->
+            val cal = Calendar.getInstance().apply{time = expense.transactionDate}
             if (cal.get(Calendar.MONTH) == month && cal.get(Calendar.YEAR) == year){
                 val day = cal.get(Calendar.DAY_OF_MONTH) -1
                 totals[day] = totals[day] + expense.amount.toFloat()
@@ -71,10 +121,11 @@ class ExpenseViewModel: ViewModel() {
 
     // Function - get user's monthly total expenses for Dashboard
     fun getTotalExpensesForMonth(month: Int, year:Int):Float{
-        return _allExpenses
-            .filter {
-                val cal = Calendar.getInstance()
-                cal.timeInMillis = it.dateMillis
+        return _allExpenses.value
+            .filter { expense ->
+                val cal = Calendar.getInstance().apply {
+                    time = expense.transactionDate
+                }
                 cal.get(Calendar.MONTH) == month && cal.get(Calendar.YEAR) == year
             }
             .sumOf{ it.amount.toDouble()}.toFloat()
@@ -82,19 +133,27 @@ class ExpenseViewModel: ViewModel() {
 
     // Function - get top 3 categories spent by user
     fun getTopCategories(month: Int, year: Int): List<CategorySpend>{
-                val filtered = _allExpenses.filter {
-                val cal = Calendar.getInstance()
-                cal.timeInMillis = it.dateMillis
+                val filtered = _allExpenses.value
+                    .filter { expense ->
+                val cal = Calendar.getInstance().apply {
+                    time = expense.transactionDate
+                }
                 cal.get(Calendar.MONTH) == month && cal.get(Calendar.YEAR) == year
             }
 
             return filtered.groupBy { it.category }
                 .map { (cat, items) ->
-                    val latestDate = items.maxByOrNull { it.dateMillis }?.dateMillis ?: 0L
-                    val formattedDate = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date(latestDate))
+                    val latestDate = items.maxByOrNull { it.transactionDate.time }?.transactionDate ?: 0L
+                    val formattedDate = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(latestDate)
                     CategorySpend(cat, items.sumOf { it.amount }.toFloat(), formattedDate)
                 }
                 .sortedByDescending { it.amount }
                 .take(3)
     }
+
+    fun clearData(){
+        expensesListener?.remove()
+        _allExpenses.value = emptyList()
+    }
+
 }

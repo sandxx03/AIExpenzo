@@ -1,6 +1,8 @@
 package com.example.aiexpenzo.data.model
 
 import java.io.Serializable
+import java.util.Calendar
+import java.util.Date
 
 data class Expense(
     val id: Long = System.currentTimeMillis(),  //generate unique ID
@@ -8,5 +10,5 @@ data class Expense(
     val category: String = "",
     val paymentMethod: String = "",
     val amount: Double = 0.0,
-    val dateMillis: Long = 0L
+    val transactionDate: Date = Date()
 ) : Serializable

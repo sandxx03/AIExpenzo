@@ -51,6 +51,7 @@ import com.example.aiexpenzo.data.constants.EXPENSE_CATEGORIES
 import com.example.aiexpenzo.data.constants.PAYMENT_METHODS
 import com.example.aiexpenzo.data.model.Expense
 import com.example.aiexpenzo.util.DatePickerField
+import java.util.Date
 
 
 @Composable
@@ -65,7 +66,8 @@ fun ManualAddExpenseScreen(
     val isEditing = initialExpense != null
     // State holders
     var amount by remember { mutableStateOf(initialExpense?.amount?.toString() ?: "")}
-    var dateMillis by remember{ mutableStateOf(System.currentTimeMillis())}
+    var dateMillis by remember{ mutableStateOf(initialExpense?.transactionDate?.time ?: System.currentTimeMillis())}
+    var transactionDate by remember { mutableStateOf(Date(dateMillis)) }
     var category by remember { mutableStateOf(initialExpense?.category ?: "") }
     var paymentMethod by remember { mutableStateOf(initialExpense?.paymentMethod ?: "") }
     var description by remember { mutableStateOf(initialExpense?.description ?: "") }
@@ -330,7 +332,9 @@ fun ManualAddExpenseScreen(
                             category = category,
                             paymentMethod = paymentMethod,
                             amount = amt,
-                            dateMillis = dateMillis
+                            transactionDate = transactionDate,
+
+
                         )
                     )
                 },

@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,16 +67,29 @@ fun DashboardScreen(
 
     val user by authViewModel.currentUser.collectAsState()
     val name = user?.name ?: ""
-    val monthlyIncome = user?.monthlyIncome?: 0f
-    val monthlyBudget = user?.monthlyBudget ?: 0f
+
     var showEditIncomeDialog by remember { mutableStateOf(false) }
     var showEditBudgetDialog by remember { mutableStateOf(false) }
 
     var selectedMonth by remember { mutableStateOf(Calendar.getInstance()) }
 
     val currentMonth = selectedMonth.get(Calendar.MONTH)
+
     val currentYear = selectedMonth.get(Calendar.YEAR)
 
+    val monthlyIncome by remember(selectedMonth){
+        derivedStateOf {
+            authViewModel.getCurrentMonthIncome(currentMonth, currentYear)
+        }
+
+    }
+
+    val monthlyBudget by remember(selectedMonth){
+        derivedStateOf {
+            authViewModel.getCurrentMonthBudget(currentMonth, currentYear)
+        }
+
+    }
     val moneyOut = expenseViewModel.getTotalExpensesForMonth(currentMonth, currentYear)
     val currentUsed = moneyOut
     val topCategories = expenseViewModel.getTopCategories(currentMonth,currentYear)
@@ -189,7 +203,12 @@ fun DashboardScreen(
                             EditValueDialog(
                                 title = "Edit Monthly Income",
                                 currentValue = monthlyIncome,
-                                onConfirm = { authViewModel.setMonthlyIncome(it) },
+                                onConfirm = {
+                                    authViewModel.setMonthlyIncome(currentMonth, currentYear, it)
+                                    showEditIncomeDialog = false
+                                    // Force state update
+                                    selectedMonth = selectedMonth.clone() as Calendar
+                                },
                                 onDismiss = {showEditIncomeDialog = false}
                             )
                         }
@@ -346,8 +365,8 @@ fun DashboardScreen(
                                     EditValueDialog(
                                         title = "Edit Monthly Budget",
                                         currentValue = monthlyBudget,
-                                        onConfirm = { authViewModel.setMonthlyBudget(it)},
-                                        validate = {authViewModel.isBudgetValid(it)},
+                                        onConfirm = { authViewModel.setMonthlyBudget(currentMonth, currentYear, it)},
+                                        validate = {authViewModel.isBudgetValid(currentMonth, currentYear, it)},
                                         errorMessage = "Budget cannot exceed income.",
                                         onDismiss = { showEditBudgetDialog = false }
 

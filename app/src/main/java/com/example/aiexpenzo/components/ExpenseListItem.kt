@@ -80,6 +80,7 @@ fun ExpenseListItem(
 }
 
 
+/*
 @Preview(showBackground=true)
 @Composable
 fun ExpenseListItemPreview(){
@@ -97,3 +98,4 @@ fun ExpenseListItemPreview(){
 
     }
 }
+*/
