@@ -13,16 +13,8 @@ object FirestoreExpenseRepository {
     suspend fun addExpense(expense: Expense): Boolean {
         return try{
             val uid = auth.currentUser?.uid ?: return false
-            val expenseData = hashMapOf(
-                "id" to expense.id,
-                "description" to expense.description,
-                "category" to expense.category,
-                "paymentMethod" to expense.paymentMethod,
-                "amount" to expense.amount,
-                "transactionDate" to Timestamp(expense.transactionDate),
-
-            )
-            db.collection("users").document(uid)
+            db.collection("users")
+                .document(uid)
                 .collection("expenses")
                 .document(expense.id.toString())
                 .set(expense)
@@ -38,7 +30,8 @@ object FirestoreExpenseRepository {
     suspend fun getAllExpenses(): List<Expense>{
         try{
             val uid = auth.currentUser?.uid ?: return emptyList()
-            val snapshot = db.collection("users").document(uid)
+            val snapshot = db.collection("users")
+                .document(uid)
                 .collection("expenses")
                 .get()
                 .await()
@@ -53,7 +46,8 @@ object FirestoreExpenseRepository {
     suspend fun updateExpense(expense: Expense): Boolean {
         return try{
             val uid = auth.currentUser?.uid ?: return false
-            db.collection("users").document(uid)
+            db.collection("users")
+                .document(uid)
                 .collection("expenses")
                 .document(expense.id.toString())
                 .set(expense)
@@ -69,8 +63,12 @@ object FirestoreExpenseRepository {
     suspend fun deleteExpense(expenseId: Long){
         try{
             val uid = auth.currentUser?.uid ?: return
-            db.collection("users").document(uid)
-                .collection("expenses").document(expenseId.toString()).delete().await()
+            db.collection("users")
+                .document(uid)
+                .collection("expenses")
+                .document(expenseId.toString())
+                .delete()
+                .await()
         } catch (e: Exception){
             println("Error deleting expense: ${e.message}")
         }

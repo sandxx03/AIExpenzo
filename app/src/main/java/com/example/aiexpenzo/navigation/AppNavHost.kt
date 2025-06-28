@@ -1,7 +1,6 @@
 package com.example.aiexpenzo.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,6 +33,7 @@ fun AppNavHost(
         startDestination = "onboarding"
     ) {
 
+        // Auth Screens
         composable("onboarding") { OnboardingScreen(navController) }
         composable("login") { LoginScreen(navController, authViewModel) }
         composable("signup") { SignUpScreen(navController, authViewModel) }
@@ -41,29 +41,23 @@ fun AppNavHost(
         composable("prompt_monthlyBudget"){ MonthlyBudgetPromptScreen(navController, authViewModel) }
 
 
-        // Bottom Nav Bar Screens
-        composable(BottomNavBarItem.Home.route) { DashboardScreen(navController, authViewModel, expenseViewModel) }
-
+        // Main Screens
+        composable(BottomNavBarItem.Home.route) {
+            DashboardScreen(navController, authViewModel, expenseViewModel)
+        }
 
         composable(BottomNavBarItem.Expenses.route){
-            ExpenseListScreen(
-                navController = navController,
-                viewModel = expenseViewModel,
-                onManualAdd = { navController.navigate("add_expense") },
-                onStatementAdd = { /* navigate to statement parsing */ },
-                onReceiptAdd = { /* navigate to receipt scan */ }
-            )}
+            ExpenseListScreen(navController, expenseViewModel)
+        }
 
         // Navigate to Manual Add Expense Screen
         composable("add_expense"){
             ManualAddExpenseScreen(
-                onBack = {navController.popBackStack()},
+                navController = navController,
+                viewModel = expenseViewModel,
                 onSave = {expense ->
                     expenseViewModel.addExpense(expense)
-                    navController.popBackStack()    // return to ExpenseListScreen
-                },
-                onCancel = {
-                    navController.popBackStack()
+                    navController.popBackStack() // return to ExpenseListScreen
                 }
             )
         }
@@ -74,14 +68,11 @@ fun AppNavHost(
                 .previousBackStackEntry
                 ?.savedStateHandle
                 ?.get<Expense>("editable_expense")
-
-
             expense?.let{
-
                 ManualAddExpenseScreen(
+                    navController = navController,
+                    viewModel = expenseViewModel,
                     initialExpense = it,
-                    onBack = {navController.popBackStack()},
-                    onCancel = {navController.popBackStack()},
                     onSave = {updatedExpense ->
                         expenseViewModel.updateExpense(updatedExpense)
                         navController.popBackStack()
@@ -90,70 +81,19 @@ fun AppNavHost(
                         expenseViewModel.removeExpense(it)
                         navController.popBackStack()
                     }
-
                 )
-
             }
-            
         }
-
 
         composable(BottomNavBarItem.Analyzer.route){}
 
         // Navigate to Profile & Settings Screen
         composable(BottomNavBarItem.Profile.route){
-            ProfileScreen(
-           navController = navController,
-                viewModel = authViewModel,
-                onLogOut = {
-                    authViewModel.logout()
-                    navController.navigate("login"){
-                        popUpTo("dashboard") { inclusive = true }
-                }
-                    navController
-                        .currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("toast_message", "You have been logged out successfully.")
-
-                }
-            )}
-
+            ProfileScreen(navController, authViewModel)}
 
         composable("edit_profile") {
-            EditProfileScreen(navController = navController, viewModel = authViewModel,
-                onCancel = {navController.popBackStack()},
-                onSave = { newName, newEmail, newPassword ->
-                    val validationError = authViewModel.validateProfileInput(newName, newEmail, newPassword)
-                    if (validationError != null) {
-                        navController
-                            .currentBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("toast_message", validationError)
-                        return@EditProfileScreen
-                    }
+            EditProfileScreen(navController, authViewModel)}
 
-                    val oldUser = authViewModel.currentUser.value
-                    authViewModel.updateUsername(newName)
-                    authViewModel.updateEmail(newEmail)
-                    authViewModel.updatePassword(newPassword)
 
-                    val oldEmail = oldUser?.email ?: ""
-                    val oldPassword = oldUser?.password ?: ""
-
-                    if (newEmail != oldEmail || newPassword != oldPassword) {
-                        authViewModel.logout()
-                        navController.navigate("login") {
-                            popUpTo("dashboard") { inclusive = true }
-                        }
-                        navController
-                            .currentBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("toast_message", "Profile updated. Please log in with your new credentials.")
-                    } else {
-                        navController.popBackStack()
-
-                    }
-                }
-            )}
-    }
+}
 }

@@ -45,4 +45,18 @@ object FirestoreUserRepository{
             .await()
     }
 
+    suspend fun updateUserName(name: String) {
+        val uid = auth.currentUser?.uid ?: return
+        db.collection("users").document(uid)
+            .update("name", name)
+            .await()
+    }
+
+    suspend fun updateUserEmail(email: String) {
+        val uid = auth.currentUser?.uid ?: return
+        db.collection("users").document(uid)
+            .update("email", email)
+            .await()
+    }
+
 }

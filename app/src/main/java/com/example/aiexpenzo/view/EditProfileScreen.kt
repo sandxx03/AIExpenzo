@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -21,7 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,11 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.BottomNavBar
 import com.example.aiexpenzo.viewmodel.AuthViewModel
@@ -45,16 +44,65 @@ import com.example.aiexpenzo.viewmodel.AuthViewModel
 fun EditProfileScreen(
     navController: NavController,
     viewModel: AuthViewModel,
-    onSave: (String, String, String) -> Unit,
-    onCancel:() -> Unit,
 ){
 
     val user by viewModel.currentUser.collectAsState()
     var name by remember { mutableStateOf(user?.name ?: "") }
     var email by remember { mutableStateOf(user?.email ?: "") }
-    var password by remember { mutableStateOf(user?.password ?: "") }
+    var newPassword by remember { mutableStateOf("") }
+    var confirmNewPassword by remember { mutableStateOf("") }
+    var showPasswordDialog by remember { mutableStateOf(false) }
+    var currentPasswordInDialog by remember { mutableStateOf("") }
+
     val context = LocalContext.current
 
+    if (showPasswordDialog) {
+        AlertDialog(
+            onDismissRequest = { showPasswordDialog = false },
+            title = { Text("Verify Password") },
+            text = {
+                Column {
+                    Text("Please enter your current password to confirm changes")
+                    OutlinedTextField(
+                        value = currentPasswordInDialog,
+                        onValueChange = { currentPasswordInDialog = it },
+                        label = { Text("Current Password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.updateProfile(
+                            newName = name,
+                            newEmail = email,
+                            newPassword = newPassword,
+                            currentPassword = currentPasswordInDialog,
+                            onSuccess = {
+                                Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            },
+                            onError = { error ->
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                        showPasswordDialog = false
+                    }
+                ) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showPasswordDialog = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Scaffold (
         bottomBar = { BottomNavBar(navController) }
@@ -70,7 +118,7 @@ fun EditProfileScreen(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // Back button and header
-                IconButton(onClick = {onCancel()}) {
+                IconButton(onClick = {navController.popBackStack()}) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back")
@@ -104,10 +152,19 @@ fun EditProfileScreen(
                     label = {Text("Email")},
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 OutlinedTextField(
-                    value = password,
-                    onValueChange = {password = it},
-                    label = {Text("Password")},
+                    value = newPassword,
+                    onValueChange = { newPassword = it },
+                    label = { Text("New Password (leave blank to keep current)") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = confirmNewPassword,
+                    onValueChange = { confirmNewPassword = it },
+                    label = { Text("Confirm New Password") },
+                    visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -125,7 +182,7 @@ fun EditProfileScreen(
 
 
                 Button(
-                    onClick = {onCancel()},
+                    onClick = {navController.popBackStack()},
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(10.dp),
@@ -140,7 +197,14 @@ fun EditProfileScreen(
                 Spacer(Modifier.width(20.dp))
 
                 Button(
-                    onClick = {onSave(name, email, password)},
+                    onClick = {
+                        if (newPassword.isNotEmpty() && newPassword != confirmNewPassword) {
+                            Toast.makeText(context, "New passwords don't match", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            showPasswordDialog = true
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.navyblue)),
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(10.dp),
@@ -153,25 +217,7 @@ fun EditProfileScreen(
                     Text(text = "SAVE CHANGES", fontWeight = FontWeight.Bold)
                 }
             }
-
-
-
         }
-
-
     }
-
-
 }
 
-/*
-@Preview(showBackground = true)
-@Composable
-fun EditProfileScreenPreview(){
-    val navController = rememberNavController()
-    val viewModel = AuthViewModel()
-    EditProfileScreen(navController, viewModel)
-
-}
-
- */

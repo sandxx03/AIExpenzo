@@ -78,24 +78,3 @@ fun ExpenseListItem(
         }
     }
 }
-
-
-/*
-@Preview(showBackground=true)
-@Composable
-fun ExpenseListItemPreview(){
-    AIExpenzoTheme {
-        val mockExpense = Expense(
-            description = "Lunch at Campus",
-            category = "Food",
-            paymentMethod = "Credit Card",
-            amount = 23.50,
-            dateMillis = 10
-        )
-        ExpenseListItem(expense = mockExpense, onClick = {})
-
-
-
-    }
-}
-*/

@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -74,11 +75,9 @@ private fun SheetOption(text: String, onClick:() -> Unit){
 fun ExpenseListScreen(
     navController: NavController,
     viewModel: ExpenseViewModel,
-    onManualAdd: () -> Unit,
-    onStatementAdd: () -> Unit,
-    onReceiptAdd: () -> Unit
 ) {
     val expenses by viewModel.allExpense.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     var showAddOptions by remember { mutableStateOf(false) }
     var selectedMonth by remember { mutableStateOf(Calendar.getInstance()) }
@@ -96,6 +95,8 @@ fun ExpenseListScreen(
         month = selectedMonth.get(Calendar.MONTH),
         year = selectedMonth.get(Calendar.YEAR)
     )
+
+
 
     Scaffold (
         bottomBar = {BottomNavBar(navController)}
@@ -287,55 +288,32 @@ fun ExpenseListScreen(
                     ) {
                         SheetOption("Manual") {
                             showAddOptions = false
-                            onManualAdd()
+                            navController.navigate("add_expense")
                         }
 
                         SheetOption("QR Pay Notification Parsing") {
                             showAddOptions = false
-                            onStatementAdd()
+                            //TODO: Handle QR Parsing navigation
                         }
                         SheetOption("Receipt Scanner") {
                             showAddOptions = false
-                            onReceiptAdd()
+                           //TODO: Handle receipt scan navigation
                         }
 
                     }
                 }
             }
-
-
         }
-
+        if (isLoading){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Gray.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ){
+                CircularProgressIndicator(color = colorResource(R.color.navyblue))
+            }
+        }
     }
-    LaunchedEffect(Unit) {
-        viewModel.loadExpensesFromFirebase()
-    }
-
-
 
 }
-
-/*
-@Preview(showBackground = true)
-@Composable
-fun ExpenseListScreenPreview(){
-    AIExpenzoTheme {
-
-        val sampleExpenses = listOf(
-            Expense("Lunch at Cafe", "Food", "Credit Card", 24.50),
-            Expense("Grab Ride", "Transport", "e-Wallet", 11.80)
-        )
-        val expensesByDateMock = mapOf(
-            "12 January 2025" to sampleExpenses,
-            "11 January 2025" to sampleExpenses
-        )
-        ExpenseListScreen(
-            expensesByDate = expensesByDateMock,
-            onManualAdd = {},
-            onStatementAdd = {},
-            onReceiptAdd = {}
-        )
-    }
-}
-
- */

@@ -24,6 +24,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -31,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,32 +47,48 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.DropdownMenuBox
 import com.example.aiexpenzo.data.constants.EXPENSE_CATEGORIES
 import com.example.aiexpenzo.data.constants.PAYMENT_METHODS
 import com.example.aiexpenzo.data.model.Expense
 import com.example.aiexpenzo.util.DatePickerField
+import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 import java.util.Date
 
 
 @Composable
 fun ManualAddExpenseScreen(
+    navController: NavController,
+    viewModel: ExpenseViewModel,
     initialExpense: Expense? = null,
-    onBack:() -> Unit = {},
     onSave: (Expense) -> Unit,
-    onCancel: () -> Unit,
     onDelete: ((Expense) -> Unit)? = null
 ){
     var showDeleteDialog by remember { mutableStateOf(false) }
     val isEditing = initialExpense != null
     // State holders
     var amount by remember { mutableStateOf(initialExpense?.amount?.toString() ?: "")}
-    var dateMillis by remember{ mutableStateOf(initialExpense?.transactionDate?.time ?: System.currentTimeMillis())}
-    var transactionDate by remember { mutableStateOf(Date(dateMillis)) }
+    var dateMillis by remember{
+        mutableStateOf(initialExpense?.transactionDate?.time ?: System.currentTimeMillis())}
+    var transactionDate by remember { mutableStateOf(initialExpense?.transactionDate ?: Date()) }
     var category by remember { mutableStateOf(initialExpense?.category ?: "") }
     var paymentMethod by remember { mutableStateOf(initialExpense?.paymentMethod ?: "") }
     var description by remember { mutableStateOf(initialExpense?.description ?: "") }
+
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    if (isLoading){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Gray.copy(alpha = 0.3f)),
+            contentAlignment = Alignment.Center
+        ){
+            CircularProgressIndicator(color = colorResource(R.color.navyblue))
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -80,7 +98,8 @@ fun ManualAddExpenseScreen(
 
     ){
         Row (
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .statusBarsPadding()
                 .height(70.dp)
                 .padding(horizontal = 16.dp),
@@ -89,7 +108,7 @@ fun ManualAddExpenseScreen(
         ){
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // Back button and header
-                IconButton(onClick = onBack) {
+                IconButton(onClick = {navController.popBackStack()}) {
                     Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back")
                 }
@@ -109,9 +128,10 @@ fun ManualAddExpenseScreen(
                     text = "Delete",
                     color = colorResource(R.color.darkred),
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {
-                        showDeleteDialog = true
-                    }
+                    modifier = Modifier
+                        .clickable {
+                            showDeleteDialog = true
+                        }
                         .padding(8.dp)
                 )
             }
@@ -127,7 +147,9 @@ fun ManualAddExpenseScreen(
 
                 confirmButton = {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Button(
@@ -165,7 +187,8 @@ fun ManualAddExpenseScreen(
         // Amount section with colored background
 
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .background(colorResource(R.color.lightblue))
                 .padding(vertical = 50.dp)
         ){
@@ -196,7 +219,7 @@ fun ManualAddExpenseScreen(
                         onValueChange = {
                             if (it.matches(Regex("^\\d*\\.?\\d{0,2}$"))){
                                 amount = it}
-                                        },
+                        },
                         placeholder = { Text("0.00", fontSize = 38.sp, fontWeight = FontWeight.Bold,color = Color.LightGray) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -220,7 +243,8 @@ fun ManualAddExpenseScreen(
         // Card section for details
 
         Column (
-            modifier = Modifier.offset(y = (-32).dp)
+            modifier = Modifier
+                .offset(y = (-32).dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
                 .background(Color.White)
@@ -231,7 +255,9 @@ fun ManualAddExpenseScreen(
             Spacer(Modifier.height(4.dp))
             DatePickerField(
                 dateMillis = dateMillis,
-                onDateChange = {dateMillis = it},
+                onDateChange = {
+                    dateMillis = it
+                    transactionDate = Date(it)},
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -291,7 +317,8 @@ fun ManualAddExpenseScreen(
         Spacer(Modifier.height(25.dp))
         // Buttons row
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 30.dp),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -299,7 +326,7 @@ fun ManualAddExpenseScreen(
 
 
             Button(
-                onClick = onCancel,
+                onClick = { navController.popBackStack() },
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(10.dp),
@@ -335,7 +362,7 @@ fun ManualAddExpenseScreen(
                             transactionDate = transactionDate,
 
 
-                        )
+                            )
                     )
                 },
                 enabled = isSaveEnabled,
@@ -353,17 +380,6 @@ fun ManualAddExpenseScreen(
         }
 
     }
-}
 
-/*
-@Preview(showBackground = true)
-@Composable
-fun ManualAddExpensePreview_Empty() {
-    ManualAddExpenseScreen(
-        initialExpense = null,
-        onSave = {},
-        onCancel = {}
-    )
-}
 
- */
+}

@@ -1,7 +1,6 @@
 package com.example.aiexpenzo.data.model
 
 import java.io.Serializable
-import java.util.Calendar
 import java.util.Date
 
 data class Expense(

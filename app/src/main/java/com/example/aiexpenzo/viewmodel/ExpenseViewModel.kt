@@ -2,6 +2,7 @@ package com.example.aiexpenzo.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.aiexpenzo.data.firebase.FirebaseService
 import com.example.aiexpenzo.data.firebase.FirebaseService.auth
 import com.example.aiexpenzo.data.firebase.FirebaseService.firestore
 import com.example.aiexpenzo.data.model.CategorySpend
@@ -17,6 +18,7 @@ import java.util.Calendar
 import java.util.Locale
 
 class ExpenseViewModel: ViewModel() {
+    private val db = FirebaseService.firestore
     private val _allExpenses = MutableStateFlow<List<Expense>>(emptyList())
     val allExpense: StateFlow<List<Expense>> = _allExpenses.asStateFlow()
 
@@ -27,19 +29,30 @@ class ExpenseViewModel: ViewModel() {
     private var expensesListener: ListenerRegistration? = null
 
     init {
-        setupExpenseListener()
+        auth.addAuthStateListener { authState ->
+            if(authState.currentUser == null){
+                clearData()
+            } else{
+                setupExpenseListener()
+            }
+        }
     }
+
 
     private fun setupExpenseListener(){
         expensesListener?.remove()
-        val uid = auth.currentUser?.uid ?: return
+        val uid = auth.currentUser?.uid ?: return run { _isLoading.value = false}
 
-        expensesListener = firestore
+        _isLoading.value = true
+        expensesListener = db
             .collection("users").document(uid)
             .collection("expenses")
             .addSnapshotListener{ snapshot, error ->
-                if (error != null) return@addSnapshotListener
+                if (error != null)
+                    return@addSnapshotListener run {_isLoading.value = false}
+
                 _allExpenses.value = snapshot?.toObjects(Expense::class.java) ?: emptyList()
+                _isLoading.value = false
             }
     }
 
@@ -47,25 +60,47 @@ class ExpenseViewModel: ViewModel() {
         expensesListener?.remove()
         super.onCleared()
     }
-    fun loadExpensesFromFirebase(){
+
+    fun addExpense(expense: Expense){
         viewModelScope.launch {
-            _allExpenses.value = FirestoreExpenseRepository.getAllExpenses()
+            _isLoading.value = true
+            try {
+                if (FirestoreExpenseRepository.addExpense(expense)){
+                    _allExpenses.value = FirestoreExpenseRepository.getAllExpenses()
+                }
+            } finally {
+                _isLoading.value = false
+            }
 
         }
     }
 
-    fun addExpense(expense: Expense){
+    // Function - update Expense Item when edited
+    fun updateExpense(updatedExpense:Expense){
         viewModelScope.launch {
-            FirestoreExpenseRepository.addExpense(expense)
+            _isLoading.value = true
+            try{
+                FirestoreExpenseRepository.updateExpense(updatedExpense)
+            }finally {
+                _isLoading.value = false
+            }
+
 
 
         }
+
     }
 
     // Function - delete Expense Item
     fun removeExpense(expense: Expense){
        viewModelScope.launch {
-           FirestoreExpenseRepository.deleteExpense(expense.id)
+           _isLoading.value = true
+           try {
+               FirestoreExpenseRepository.deleteExpense(expense.id)
+           } finally {
+               _isLoading.value = false
+           }
+
 
        }
     }
@@ -87,15 +122,6 @@ class ExpenseViewModel: ViewModel() {
 
     fun hasExpensesForMonth(month: Int, year: Int): Boolean{
         return getExpensesForMonth(month, year).isNotEmpty()
-    }
-
-    // Function - update Expense Item when edited
-    fun updateExpense(updatedExpense:Expense){
-        viewModelScope.launch {
-            FirestoreExpenseRepository.updateExpense(updatedExpense)
-            loadExpensesFromFirebase()
-        }
-
     }
 
 
@@ -154,6 +180,7 @@ class ExpenseViewModel: ViewModel() {
     fun clearData(){
         expensesListener?.remove()
         _allExpenses.value = emptyList()
+        _isLoading.value = false
     }
 
 }

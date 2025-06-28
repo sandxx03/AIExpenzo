@@ -18,6 +18,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,9 +39,10 @@ import com.example.aiexpenzo.viewmodel.AuthViewModel
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: AuthViewModel,
-    onLogOut: () -> Unit
+    viewModel: AuthViewModel
 ){
+
+    val user by viewModel.currentUser.collectAsState()
 
     Scaffold (
         bottomBar = { BottomNavBar(navController) }
@@ -151,7 +154,12 @@ fun ProfileScreen(
                 }
 
                 Button(
-                    onClick = {onLogOut()},
+                    onClick = {
+                        viewModel.logout()
+                              navController.navigate("login"){
+                                  popUpTo(0)
+                              }
+                      },
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.darkred)),
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)

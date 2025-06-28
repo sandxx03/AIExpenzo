@@ -22,17 +22,20 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,14 +80,14 @@ fun DashboardScreen(
 
     val currentYear = selectedMonth.get(Calendar.YEAR)
 
-    val monthlyIncome by remember(selectedMonth){
+    val monthlyIncome by remember(user, selectedMonth){
         derivedStateOf {
             authViewModel.getCurrentMonthIncome(currentMonth, currentYear)
         }
 
     }
 
-    val monthlyBudget by remember(selectedMonth){
+    val monthlyBudget by remember(user, selectedMonth){
         derivedStateOf {
             authViewModel.getCurrentMonthBudget(currentMonth, currentYear)
         }
@@ -99,8 +102,27 @@ fun DashboardScreen(
     val moneyOutRatio = if (monthlyIncome > 0) (moneyOut / monthlyIncome).coerceIn(0f, 1f) else 0f //moneyOut
 
 
-
     val scrollState = rememberScrollState()
+    val isLoading by authViewModel.isLoading.collectAsState()
+
+    if (isLoading){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Gray.copy(alpha = 0.3f)),
+            contentAlignment = Alignment.Center
+        ){
+            CircularProgressIndicator(color = colorResource(R.color.navyblue))
+        }
+    }
+
+    LaunchedEffect(isLoading) {
+        if(!isLoading){
+            showEditIncomeDialog = false
+            showEditBudgetDialog = false
+        }
+    }
+
 
     Scaffold (
         bottomBar = { BottomNavBar(navController)},
@@ -209,9 +231,11 @@ fun DashboardScreen(
                                     // Force state update
                                     selectedMonth = selectedMonth.clone() as Calendar
                                 },
-                                onDismiss = {showEditIncomeDialog = false}
+                                onDismiss = { if (!isLoading) showEditIncomeDialog = false},
+
                             )
                         }
+
 
                         Text(
                             "$${String.format("%,.2f", monthlyIncome)}",
@@ -368,7 +392,7 @@ fun DashboardScreen(
                                         onConfirm = { authViewModel.setMonthlyBudget(currentMonth, currentYear, it)},
                                         validate = {authViewModel.isBudgetValid(currentMonth, currentYear, it)},
                                         errorMessage = "Budget cannot exceed income.",
-                                        onDismiss = { showEditBudgetDialog = false }
+                                        onDismiss = { if (!isLoading) showEditBudgetDialog = false }
 
                                     )
                                 }
@@ -494,21 +518,11 @@ fun DashboardScreen(
 
                     }
 
-
                 }
-
-
-
 
             }
 
-
-
         }
     }
-
-
-
-
 
 }
