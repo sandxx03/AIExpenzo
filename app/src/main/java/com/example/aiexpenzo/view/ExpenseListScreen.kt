@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,7 +31,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +50,6 @@ import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.BottomNavBar
 import com.example.aiexpenzo.components.DailyLineChart
 import com.example.aiexpenzo.components.ExpenseListItem
-import com.example.aiexpenzo.data.model.Expense
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -77,7 +74,6 @@ fun ExpenseListScreen(
     viewModel: ExpenseViewModel,
 ) {
     val expenses by viewModel.allExpense.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
 
     var showAddOptions by remember { mutableStateOf(false) }
     var selectedMonth by remember { mutableStateOf(Calendar.getInstance()) }
@@ -302,16 +298,6 @@ fun ExpenseListScreen(
 
                     }
                 }
-            }
-        }
-        if (isLoading){
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Gray.copy(alpha = 0.3f)),
-                contentAlignment = Alignment.Center
-            ){
-                CircularProgressIndicator(color = colorResource(R.color.navyblue))
             }
         }
     }

@@ -2,7 +2,6 @@ package com.example.aiexpenzo.data.repository
 
 import com.example.aiexpenzo.data.firebase.FirebaseService
 import com.example.aiexpenzo.data.model.Expense
-import com.google.firebase.Timestamp
 import kotlinx.coroutines.tasks.await
 
 object FirestoreExpenseRepository {

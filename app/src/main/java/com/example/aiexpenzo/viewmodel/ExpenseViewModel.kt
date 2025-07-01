@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aiexpenzo.data.firebase.FirebaseService
 import com.example.aiexpenzo.data.firebase.FirebaseService.auth
-import com.example.aiexpenzo.data.firebase.FirebaseService.firestore
 import com.example.aiexpenzo.data.model.CategorySpend
 import com.example.aiexpenzo.data.model.Expense
 import com.example.aiexpenzo.data.repository.FirestoreExpenseRepository
@@ -24,11 +23,11 @@ class ExpenseViewModel: ViewModel() {
 
     // Loading state
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private var expensesListener: ListenerRegistration? = null
 
-    init {
+    init {3
         auth.addAuthStateListener { authState ->
             if(authState.currentUser == null){
                 clearData()
@@ -62,14 +61,15 @@ class ExpenseViewModel: ViewModel() {
     }
 
     fun addExpense(expense: Expense){
+        _isLoading.value = true
         viewModelScope.launch {
-            _isLoading.value = true
             try {
                 if (FirestoreExpenseRepository.addExpense(expense)){
                     _allExpenses.value = FirestoreExpenseRepository.getAllExpenses()
                 }
             } finally {
                 _isLoading.value = false
+
             }
 
         }
@@ -77,31 +77,25 @@ class ExpenseViewModel: ViewModel() {
 
     // Function - update Expense Item when edited
     fun updateExpense(updatedExpense:Expense){
+        _isLoading.value = true
         viewModelScope.launch {
-            _isLoading.value = true
             try{
                 FirestoreExpenseRepository.updateExpense(updatedExpense)
             }finally {
                 _isLoading.value = false
             }
-
-
-
         }
-
     }
 
     // Function - delete Expense Item
     fun removeExpense(expense: Expense){
+        _isLoading.value = true
        viewModelScope.launch {
-           _isLoading.value = true
            try {
                FirestoreExpenseRepository.deleteExpense(expense.id)
            } finally {
                _isLoading.value = false
            }
-
-
        }
     }
 
@@ -117,13 +111,11 @@ class ExpenseViewModel: ViewModel() {
             .groupBy { expense ->
                 formatter.format(expense.transactionDate)
             }
-
     }
 
     fun hasExpensesForMonth(month: Int, year: Int): Boolean{
         return getExpensesForMonth(month, year).isNotEmpty()
     }
-
 
     // Function - get Expense Data for Chart
     fun getDailyTotalsForMonth(month: Int, year: Int): List<Float>{
@@ -140,7 +132,6 @@ class ExpenseViewModel: ViewModel() {
                 val day = cal.get(Calendar.DAY_OF_MONTH) -1
                 totals[day] = totals[day] + expense.amount.toFloat()
             }
-
         }
         return totals
     }

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.aiexpenzo.navigation.AppNavHost
 import com.example.aiexpenzo.ui.theme.AIExpenzoTheme
+import com.example.aiexpenzo.viewmodel.AiAnalyzerViewModel
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 import com.google.firebase.FirebaseApp
@@ -25,7 +26,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val authViewModel: AuthViewModel = viewModel()
                 val expenseViewModel: ExpenseViewModel = viewModel()
-                AppNavHost(navController, authViewModel, expenseViewModel)
+                val aiAnalyzerViewModel: AiAnalyzerViewModel = viewModel()
+                AppNavHost(navController, authViewModel, expenseViewModel, aiAnalyzerViewModel)
             }
 
         }

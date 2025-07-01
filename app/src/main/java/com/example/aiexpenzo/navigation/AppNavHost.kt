@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.aiexpenzo.components.BottomNavBarItem
 import com.example.aiexpenzo.data.model.Expense
+import com.example.aiexpenzo.view.AIAnalyzerScreen
 import com.example.aiexpenzo.view.DashboardScreen
 import com.example.aiexpenzo.view.EditProfileScreen
 import com.example.aiexpenzo.view.ExpenseListScreen
@@ -16,6 +17,7 @@ import com.example.aiexpenzo.view.MonthlyIncomePromptScreen
 import com.example.aiexpenzo.view.OnboardingScreen
 import com.example.aiexpenzo.view.ProfileScreen
 import com.example.aiexpenzo.view.SignUpScreen
+import com.example.aiexpenzo.viewmodel.AiAnalyzerViewModel
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 
@@ -24,7 +26,8 @@ import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 fun AppNavHost(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    expenseViewModel: ExpenseViewModel
+    expenseViewModel: ExpenseViewModel,
+    aiAnalyzerViewModel: AiAnalyzerViewModel
 ){
 
 
@@ -85,7 +88,9 @@ fun AppNavHost(
             }
         }
 
-        composable(BottomNavBarItem.Analyzer.route){}
+        composable(BottomNavBarItem.Analyzer.route){
+            AIAnalyzerScreen(navController)
+        }
 
         // Navigate to Profile & Settings Screen
         composable(BottomNavBarItem.Profile.route){
