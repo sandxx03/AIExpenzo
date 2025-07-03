@@ -15,23 +15,30 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.AiResponseCard
 import com.example.aiexpenzo.components.BottomNavBar
@@ -43,18 +50,21 @@ fun AIAnalyzerScreen(
     navController: NavController,
     aiViewModel: AiAnalyzerViewModel = viewModel(),
     expenseViewModel: ExpenseViewModel = viewModel()
-
 ) {
     val expenses by expenseViewModel.allExpense.collectAsState(initial = emptyList())
     val isLoading by aiViewModel.isLoading
     val analysisList by aiViewModel.result
 
-    val headers = listOf(
-        "Category Breakdown & Spending Patterns",
-        "Type of Spender",
-        "Savings Recommendations"
-    )
-
+    val isNoExpenseState = analysisList?.size == 1
+    val headers = if (isNoExpenseState){
+        listOf("Getting Started Tips")
+    } else{
+        listOf(
+            "Category Breakdown & Spending Patterns",
+            "Type of Spender",
+            "Tips & Advice"
+        )
+    }
 
     Scaffold(
         bottomBar = { BottomNavBar(navController) },
@@ -106,6 +116,18 @@ fun AIAnalyzerScreen(
 
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "We recommend logging at least 7 days of expense to enjoy this feature. However, we can provide you some tips and advice on starting your expense tracking journey.",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = colorResource(R.color.navyblue),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp, bottom = 8.dp)
+
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = "Click the button to start.",
@@ -134,12 +156,13 @@ fun AIAnalyzerScreen(
                             containerColor = colorResource(R.color.lightblue)
                         )
                     ) {
-                        Text(
-                            text = "Analyze",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = colorResource(R.color.navyblue)
+                        Icon(
+                            painter = painterResource(R.drawable.ic_analyzer),
+                            contentDescription = "Analyze",
+                            modifier = Modifier.fillMaxSize()
+                                .background(color = Color.Transparent)
                         )
+
                     }
                 }
                 Spacer(modifier = Modifier.height(80.dp))
@@ -155,22 +178,33 @@ fun AIAnalyzerScreen(
                         CircularProgressIndicator(color = colorResource(R.color.navyblue))
                     }
                 } else {
-                    analysisList
-                        ?.take(3)
-                        ?.forEachIndexed{ idx, section ->
+                    if (analysisList != null){
+                        analysisList!!.forEachIndexed { idx, section ->
                             AiResponseCard(
-                                header = headers[idx],
+                                header = headers.getOrNull(idx) ?: "Insight",
                                 body = section
                             )
-
-
+                        }
                     }
+
                 }
-
-
             }
         }
-
     }
 }
 
+/*
+@Preview (showBackground = true)
+@Composable
+fun AiAnalyzerScreenPreview(){
+    val navController = rememberNavController()
+    val aiViewModel = AiAnalyzerViewModel()
+    val expenseViewModel = ExpenseViewModel()
+    AIAnalyzerScreen(
+        navController = navController,
+        aiViewModel = aiViewModel,
+        expenseViewModel = expenseViewModel
+    )
+}
+
+ */

@@ -31,7 +31,7 @@ class AuthViewModel:ViewModel() {
     // public read-only state flow exposed to UI layer to observe authentication success
     val authSuccess: StateFlow<Boolean> = _authSuccess.asStateFlow()
 
-    // private mutablle state flow that holds error messages (default = null)
+    // private mutable state flow that holds error messages (default = null)
     private val _errorMessage = MutableStateFlow<String?>(null)
 
     // public read-only state flow exposed to UI layer to observe errors
