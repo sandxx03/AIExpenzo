@@ -226,15 +226,16 @@ fun ExpenseListScreen(
                                     Text(
                                         text = date,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF113A49),
+                                        color = colorResource(R.color.navyblue),
                                         fontWeight = FontWeight.Bold,
+
 
                                     )
                                     val totalAmount = expenses.sumOf { it.amount }
                                     Text(
                                         text = "$ %.2f".format(totalAmount),
                                         style = MaterialTheme.typography.bodySmall,
-                                        color =  Color(0xFF113A49),
+                                        color =  colorResource(R.color.navyblue),
                                         fontWeight = FontWeight.Bold
                                     )
 
@@ -287,13 +288,9 @@ fun ExpenseListScreen(
                             navController.navigate("add_expense")
                         }
 
-                        SheetOption("QR Pay Notification Parsing") {
+                        SheetOption("Upload QR Pay Statement") {
                             showAddOptions = false
-                            //TODO: Handle QR Parsing navigation
-                        }
-                        SheetOption("Receipt Scanner") {
-                            showAddOptions = false
-                           //TODO: Handle receipt scan navigation
+                            navController.navigate("upload_qr")
                         }
 
                     }

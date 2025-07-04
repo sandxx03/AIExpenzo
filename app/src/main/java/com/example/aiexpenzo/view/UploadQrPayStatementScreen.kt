@@ -1,0 +1,188 @@
+package com.example.aiexpenzo.view
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.aiexpenzo.R
+
+@Composable
+fun UploadQrPayStatementScreen(
+    navController: NavController,
+    onExtract: (String) -> Unit
+
+){
+    Box(modifier = Modifier
+        .fillMaxSize()
+
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .verticalScroll(rememberScrollState())
+
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .height(70.dp)
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Back button and header
+                    IconButton(onClick = {navController.popBackStack()}) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                    Spacer(Modifier.width((6.dp)))
+
+                    Text(
+                        text = "Add Expense",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
+                        color = colorResource(R.color.navyblue)
+                    )
+
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Automatically log expense with screenshots of your e-Wallet/QR Pay transaction statements.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colorResource(R.color.navyblue)
+
+                )
+                Spacer(modifier = Modifier.height(35.dp))
+
+                Column (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(colorResource(R.color.lightblue), RoundedCornerShape(12.dp))
+                        .padding(vertical = 10.dp, horizontal = 16.dp),
+                ){
+                    Text(
+                        text="1. Screenshot your transaction statement in your e-Wallet/QR Pay applications.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text="2. Upload your screenshot below.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text="3. Click 'Extract'.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = "UPLOAD TRANSACTION STATEMENT",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(R.color.navyblue)
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Column (
+                    modifier = Modifier
+                        .background(Color.Gray)
+                ){
+                    Text("Replace with image picker")
+                }
+
+            }
+            Spacer(modifier = Modifier.height(40.dp))
+            // Buttons row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 30.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+
+                Button(
+                    onClick = {navController.popBackStack() },
+                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp,
+                        focusedElevation = 4.dp
+                    ),
+                ) {
+                    Text(text = "CANCEL", fontWeight = FontWeight.Bold, color = colorResource(R.color.navyblue))
+                }
+                Spacer(Modifier.width(50.dp))
+                Button(
+                    onClick = {},
+                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.navyblue)),
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp,
+                        focusedElevation = 4.dp
+                    )
+                ){
+                    Text(text = "EXTRACT", fontWeight = FontWeight.Bold)
+                }
+            }
+
+
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UploadScreenPreview(){
+    UploadQrPayStatementScreen(
+        navController = rememberNavController(),
+        onExtract = {}
+    )
+}

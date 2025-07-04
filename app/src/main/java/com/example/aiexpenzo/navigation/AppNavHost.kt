@@ -17,6 +17,7 @@ import com.example.aiexpenzo.view.MonthlyIncomePromptScreen
 import com.example.aiexpenzo.view.OnboardingScreen
 import com.example.aiexpenzo.view.ProfileScreen
 import com.example.aiexpenzo.view.SignUpScreen
+import com.example.aiexpenzo.view.UploadQrPayStatementScreen
 import com.example.aiexpenzo.viewmodel.AiAnalyzerViewModel
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
@@ -65,6 +66,14 @@ fun AppNavHost(
             )
         }
 
+        // Navigate to UploadQRPayStatement Screen
+        composable("upload_qr"){
+            UploadQrPayStatementScreen(
+                navController = navController,
+                onExtract = {}
+            )
+        }
+
         // When user click on expense item, navigate to editable screen
         composable("edit_expense"){
             val expense = navController
@@ -89,7 +98,7 @@ fun AppNavHost(
         }
 
         composable(BottomNavBarItem.Analyzer.route){
-            AIAnalyzerScreen(navController)
+            AIAnalyzerScreen(navController, aiAnalyzerViewModel, expenseViewModel)
         }
 
         // Navigate to Profile & Settings Screen
