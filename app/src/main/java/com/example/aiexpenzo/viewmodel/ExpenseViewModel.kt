@@ -61,13 +61,12 @@ class ExpenseViewModel: ViewModel() {
     }
 
     fun addExpense(expense: Expense){
-        _isLoading.value = true
         viewModelScope.launch {
+            _isLoading.value = true
 
             try {
-                if (FirestoreExpenseRepository.addExpense(expense)){
-                    _allExpenses.value = FirestoreExpenseRepository.getAllExpenses()
-                }
+                // Firestore listener will eventually sync and update
+                FirestoreExpenseRepository.addExpense(expense)
             } finally {
                 _isLoading.value = false
 
@@ -78,8 +77,8 @@ class ExpenseViewModel: ViewModel() {
 
     // Function - update Expense Item when edited
     fun updateExpense(updatedExpense:Expense){
-        _isLoading.value = true
         viewModelScope.launch {
+            _isLoading.value = true
             try{
                 FirestoreExpenseRepository.updateExpense(updatedExpense)
             }finally {
@@ -90,8 +89,8 @@ class ExpenseViewModel: ViewModel() {
 
     // Function - delete Expense Item
     fun removeExpense(expense: Expense){
-        _isLoading.value = true
        viewModelScope.launch {
+           _isLoading.value = true
            try {
                FirestoreExpenseRepository.deleteExpense(expense.id)
            } finally {

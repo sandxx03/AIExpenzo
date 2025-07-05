@@ -100,8 +100,7 @@ fun AppNavHost(
                 } else null,
                 onSave = {expense ->
                     expenseViewModel.addExpense(expense)
-                    qrStatementViewModel.clearParsedData()
-                    navController.popBackStack(BottomNavBarItem.Expenses.route, inclusive = false) // return to ExpenseListScreen
+
                 }
             )
         }
@@ -124,11 +123,10 @@ fun AppNavHost(
                     initialExpense = it,
                     onSave = {updatedExpense ->
                         expenseViewModel.updateExpense(updatedExpense)
-                        navController.popBackStack()
+
                     },
                     onDelete = {
                         expenseViewModel.removeExpense(it)
-                        navController.popBackStack()
                     }
                 )
             }

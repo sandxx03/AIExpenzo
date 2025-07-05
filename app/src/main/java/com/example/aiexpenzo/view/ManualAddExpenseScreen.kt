@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -81,7 +82,14 @@ fun ManualAddExpenseScreen(
     var paymentMethod by remember { mutableStateOf(initialExpense?.paymentMethod ?: "") }
     var description by remember { mutableStateOf(initialExpense?.description ?: "") }
 
+    var navigateAfterSave by remember { mutableStateOf(false)}
     val isLoading by expenseViewModel.isLoading.collectAsState()
+    LaunchedEffect(isLoading) {
+        if (!isLoading && navigateAfterSave) {
+            qrStatementViewModel.clearParsedData()
+            navController.popBackStack(BottomNavBarItem.Expenses.route, inclusive = false)
+        }
+    }
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -169,6 +177,7 @@ fun ManualAddExpenseScreen(
                                 onClick = {
                                     showDeleteDialog = false
                                     onDelete?.invoke(initialExpense)
+                                    navigateAfterSave = true
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = colorResource(R.color.darkred)
@@ -345,6 +354,7 @@ fun ManualAddExpenseScreen(
 
                 val isSaveEnabled = amount.isNotBlank() && category.isNotBlank()
                 val context = LocalContext.current
+
                 Button(
                     onClick = {
                         val amt = amount.toDoubleOrNull()?: 0.0
@@ -355,7 +365,8 @@ fun ManualAddExpenseScreen(
                             return@Button
 
                         }
-                        onSave(
+
+                        val newExpense =
                             Expense(
                                 id = initialExpense?.id ?: System.currentTimeMillis(),  // important for viewModel to match during update
                                 description = description,
@@ -364,7 +375,9 @@ fun ManualAddExpenseScreen(
                                 amount = amt,
                                 transactionDate = transactionDate,
                             )
-                        )
+                        onSave(newExpense)
+                        navigateAfterSave = true
+
                     },
                     enabled = isSaveEnabled,
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.navyblue)),
@@ -381,7 +394,6 @@ fun ManualAddExpenseScreen(
             }
 
         }
-
         if (isLoading){
             Box(
                 modifier = Modifier
@@ -393,6 +405,8 @@ fun ManualAddExpenseScreen(
             }
         }
 
+
     }
+
 
 }
