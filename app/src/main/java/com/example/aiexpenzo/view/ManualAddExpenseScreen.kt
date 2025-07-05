@@ -47,21 +47,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.aiexpenzo.R
+import com.example.aiexpenzo.components.BottomNavBarItem
 import com.example.aiexpenzo.components.DropdownMenuBox
 import com.example.aiexpenzo.data.constants.EXPENSE_CATEGORIES
 import com.example.aiexpenzo.data.constants.PAYMENT_METHODS
 import com.example.aiexpenzo.data.model.Expense
 import com.example.aiexpenzo.util.DatePickerField
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
+import com.example.aiexpenzo.viewmodel.QRStatementViewModel
 import java.util.Date
 
 
 @Composable
 fun ManualAddExpenseScreen(
     navController: NavController,
-    viewModel: ExpenseViewModel,
+    expenseViewModel: ExpenseViewModel = viewModel(),
+    qrStatementViewModel: QRStatementViewModel = viewModel(),
     initialExpense: Expense? = null,
     onSave: (Expense) -> Unit,
     onDelete: ((Expense) -> Unit)? = null
@@ -77,7 +81,7 @@ fun ManualAddExpenseScreen(
     var paymentMethod by remember { mutableStateOf(initialExpense?.paymentMethod ?: "") }
     var description by remember { mutableStateOf(initialExpense?.description ?: "") }
 
-    val isLoading by viewModel.isLoading.collectAsState()
+    val isLoading by expenseViewModel.isLoading.collectAsState()
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -102,7 +106,10 @@ fun ManualAddExpenseScreen(
             ){
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Back button and header
-                    IconButton(onClick = {navController.popBackStack()}) {
+                    IconButton(onClick = {
+                        qrStatementViewModel.clearParsedData()
+                        navController.popBackStack(BottomNavBarItem.Expenses.route, inclusive = false) }
+                    ) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back")
                     }
@@ -320,7 +327,9 @@ fun ManualAddExpenseScreen(
 
 
                 Button(
-                    onClick = { navController.popBackStack() },
+                    onClick = {
+                        qrStatementViewModel.clearParsedData()
+                        navController.popBackStack(BottomNavBarItem.Expenses.route, inclusive = false) },
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(10.dp),

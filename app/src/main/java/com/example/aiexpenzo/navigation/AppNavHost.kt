@@ -1,6 +1,7 @@
 package com.example.aiexpenzo.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +22,10 @@ import com.example.aiexpenzo.view.UploadQrPayStatementScreen
 import com.example.aiexpenzo.viewmodel.AiAnalyzerViewModel
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
+import com.example.aiexpenzo.viewmodel.QRStatementViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
@@ -28,7 +33,8 @@ fun AppNavHost(
     navController: NavHostController,
     authViewModel: AuthViewModel,
     expenseViewModel: ExpenseViewModel,
-    aiAnalyzerViewModel: AiAnalyzerViewModel
+    aiAnalyzerViewModel: AiAnalyzerViewModel,
+    qrStatementViewModel: QRStatementViewModel
 ){
 
 
@@ -56,22 +62,53 @@ fun AppNavHost(
 
         // Navigate to Manual Add Expense Screen
         composable("add_expense"){
+            // injecting values extracted from QR Pay Statement
+            val savedState = navController
+                .previousBackStackEntry
+                ?.savedStateHandle
+
+            LaunchedEffect(Unit) {
+                savedState?.apply {
+                    remove<String>("parsed_amount")
+                    remove<String>("parsed_method")
+                    remove<String>("parsed_description")
+                    remove<String>("parsed_date")
+                }
+            }
+            val parsedAmount = savedState?.get<String>("parsed_amount")
+            val parsedMethod = savedState?.get<String>("parsed_method")
+            val parsedDescription = savedState?.get<String>("parsed_description")
+            val parsedDate = savedState?.get<String>("parsed_date")
+
+            val parsedDateObj = try {
+                parsedDate?.let {
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(it)
+                }
+            } catch (e: Exception){null}
+
             ManualAddExpenseScreen(
                 navController = navController,
-                viewModel = expenseViewModel,
+                expenseViewModel = expenseViewModel,
+                qrStatementViewModel = qrStatementViewModel,
+                initialExpense = if (parsedAmount != null || parsedMethod != null || parsedDescription != null){
+                    Expense(
+                        amount = parsedAmount?.toDoubleOrNull() ?: 0.0,
+                        paymentMethod = parsedMethod ?: "",
+                        description = parsedDescription ?: "",
+                        transactionDate = parsedDateObj ?: Date()
+                    )
+                } else null,
                 onSave = {expense ->
                     expenseViewModel.addExpense(expense)
-                    navController.popBackStack() // return to ExpenseListScreen
+                    qrStatementViewModel.clearParsedData()
+                    navController.popBackStack(BottomNavBarItem.Expenses.route, inclusive = false) // return to ExpenseListScreen
                 }
             )
         }
 
         // Navigate to UploadQRPayStatement Screen
         composable("upload_qr"){
-            UploadQrPayStatementScreen(
-                navController = navController,
-                onExtract = {}
-            )
+            UploadQrPayStatementScreen(navController, qrStatementViewModel)
         }
 
         // When user click on expense item, navigate to editable screen
@@ -83,7 +120,7 @@ fun AppNavHost(
             expense?.let{
                 ManualAddExpenseScreen(
                     navController = navController,
-                    viewModel = expenseViewModel,
+                    expenseViewModel = expenseViewModel,
                     initialExpense = it,
                     onSave = {updatedExpense ->
                         expenseViewModel.updateExpense(updatedExpense)

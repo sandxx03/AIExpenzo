@@ -27,7 +27,7 @@ class ExpenseViewModel: ViewModel() {
 
     private var expensesListener: ListenerRegistration? = null
 
-    init {3
+    init {
         auth.addAuthStateListener { authState ->
             if(authState.currentUser == null){
                 clearData()
@@ -63,6 +63,7 @@ class ExpenseViewModel: ViewModel() {
     fun addExpense(expense: Expense){
         _isLoading.value = true
         viewModelScope.launch {
+
             try {
                 if (FirestoreExpenseRepository.addExpense(expense)){
                     _allExpenses.value = FirestoreExpenseRepository.getAllExpenses()

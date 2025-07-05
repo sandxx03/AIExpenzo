@@ -1,6 +1,11 @@
 package com.example.aiexpenzo.view
 
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -19,29 +25,55 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.aiexpenzo.R
+import com.example.aiexpenzo.components.BottomNavBarItem
+import com.example.aiexpenzo.util.extractTextFromImage
+import com.example.aiexpenzo.viewmodel.QRStatementViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun UploadQrPayStatementScreen(
     navController: NavController,
-    onExtract: (String) -> Unit
+    viewModel: QRStatementViewModel
 
 ){
+    val isLoading by viewModel.isLoading
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null)}
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        selectedImageUri = uri
+    }
+
     Box(modifier = Modifier
         .fillMaxSize()
 
@@ -100,36 +132,74 @@ fun UploadQrPayStatementScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(colorResource(R.color.lightblue), RoundedCornerShape(12.dp))
-                        .padding(vertical = 10.dp, horizontal = 16.dp),
+                        .padding(vertical = 16.dp, horizontal = 16.dp),
                 ){
+
+                    Text(
+                        text="INSTRUCTIONS",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text="1. Screenshot your transaction statement in your e-Wallet/QR Pay applications.",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text="2. Upload your screenshot below.",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyLarge
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text="3. Click 'Extract'.",
-                        style = MaterialTheme.typography.bodyMedium
+                        text="3. Click 'EXTRACT'.",
+                        style = MaterialTheme.typography.bodyLarge
                     )
 
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = "UPLOAD TRANSACTION STATEMENT",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(R.color.navyblue)
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 Column (
                     modifier = Modifier
-                        .background(Color.Gray)
+                        .fillMaxWidth()
+                        .background(Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+                        .padding(16.dp)
+                        .clickable { imagePickerLauncher.launch("image/*") },
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    Text("Replace with image picker")
+                    if (selectedImageUri != null){
+                        AsyncImage(
+                            model = selectedImageUri,
+                            contentDescription = "Selected image preview",
+                            modifier = Modifier.fillMaxWidth()
+                                .height(200.dp)
+                        )
+                    } else{
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_upload),
+                                contentDescription = "Select image",
+                                tint = Color.DarkGray.copy(alpha=0.4f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Tap to select image",
+                                color = Color.DarkGray.copy(alpha=0.4f)
+                            )
+                        }
+                    }
+
+
                 }
 
             }
@@ -145,7 +215,7 @@ fun UploadQrPayStatementScreen(
 
 
                 Button(
-                    onClick = {navController.popBackStack() },
+                    onClick = {navController.popBackStack(BottomNavBarItem.Expenses.route, inclusive = false) },
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(10.dp),
@@ -159,7 +229,25 @@ fun UploadQrPayStatementScreen(
                 }
                 Spacer(Modifier.width(50.dp))
                 Button(
-                    onClick = {},
+                    onClick = {
+                        selectedImageUri?.let { uri ->
+                            coroutineScope.launch {
+                                val text = extractTextFromImage(context, uri)
+                                if (text.isBlank() || text.length < 10){
+                                    Toast.makeText(
+                                        context,
+                                        "Image is not clear or not extractable!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    viewModel.extract(text)
+                                }
+
+                            }
+                        }
+
+                    },
+                    enabled = selectedImageUri != null,
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.navyblue)),
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(10.dp),
@@ -175,6 +263,36 @@ fun UploadQrPayStatementScreen(
 
 
         }
+        if (isLoading){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Gray.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ){
+                CircularProgressIndicator(color = colorResource(R.color.navyblue))
+            }
+        }
+    }
+    val parsed = viewModel.parsedExpense.value
+    // runs once
+    LaunchedEffect(Unit) {
+        viewModel.clearParsedData()
+    }
+    // runs when parsed changes (after successful extraction)
+    LaunchedEffect (parsed){
+        parsed?.let{
+            navController
+                .currentBackStackEntry
+                ?.savedStateHandle
+                ?.apply { 
+                    set("parsed_amount", it.amount?.toString())
+                    set("parsed_method", it.payment_method ?: "")
+                    set("parsed_description", it.description ?: "")
+                    set("parsed_date", it.transaction_date ?: "")
+                }
+            navController.navigate("add_expense")
+        }
     }
 }
 
@@ -183,6 +301,6 @@ fun UploadQrPayStatementScreen(
 fun UploadScreenPreview(){
     UploadQrPayStatementScreen(
         navController = rememberNavController(),
-        onExtract = {}
+        viewModel = QRStatementViewModel()
     )
 }

@@ -11,6 +11,7 @@ import com.example.aiexpenzo.ui.theme.AIExpenzoTheme
 import com.example.aiexpenzo.viewmodel.AiAnalyzerViewModel
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
+import com.example.aiexpenzo.viewmodel.QRStatementViewModel
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
@@ -27,7 +28,8 @@ class MainActivity : ComponentActivity() {
                 val authViewModel: AuthViewModel = viewModel()
                 val expenseViewModel: ExpenseViewModel = viewModel()
                 val aiAnalyzerViewModel: AiAnalyzerViewModel = viewModel()
-                AppNavHost(navController, authViewModel, expenseViewModel, aiAnalyzerViewModel)
+                val qrStatementViewModel: QRStatementViewModel = viewModel()
+                AppNavHost(navController, authViewModel, expenseViewModel, aiAnalyzerViewModel, qrStatementViewModel)
             }
 
         }

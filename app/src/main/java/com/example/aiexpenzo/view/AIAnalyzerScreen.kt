@@ -21,8 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -38,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.AiResponseCard
 import com.example.aiexpenzo.components.BottomNavBar
@@ -57,7 +54,7 @@ fun AIAnalyzerScreen(
 
     val isNoExpenseState = analysisList?.size == 1
     val headers = if (isNoExpenseState){
-        listOf("Getting Started Tips")
+        listOf("Log more expenses to enjoy this feature.")
     } else{
         listOf(
             "Category Breakdown & Spending Patterns",
@@ -117,11 +114,11 @@ fun AIAnalyzerScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "We recommend logging at least 7 days of expense to enjoy this feature. However, we can provide you some tips and advice on starting your expense tracking journey.",
+                    text = "We recommend logging at least 7 days of expense for a more insightful analysis.",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = colorResource(R.color.navyblue),
-                    textAlign = TextAlign.Center,
+                    textAlign = TextAlign.Justify,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp, bottom = 8.dp)
@@ -193,18 +190,13 @@ fun AIAnalyzerScreen(
     }
 }
 
-/*
-@Preview (showBackground = true)
+
+@Preview(showBackground = true)
 @Composable
 fun AiAnalyzerScreenPreview(){
-    val navController = rememberNavController()
-    val aiViewModel = AiAnalyzerViewModel()
-    val expenseViewModel = ExpenseViewModel()
     AIAnalyzerScreen(
-        navController = navController,
-        aiViewModel = aiViewModel,
-        expenseViewModel = expenseViewModel
+        navController = rememberNavController(),
+        aiViewModel = AiAnalyzerViewModel(),
+        expenseViewModel = ExpenseViewModel()
     )
 }
-
- */
