@@ -2,14 +2,20 @@ package com.example.aiexpenzo.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -27,38 +33,40 @@ fun BottomNavBar(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    NavigationBar(
-        modifier = Modifier.fillMaxWidth()
-            .background(Color.White),
-        tonalElevation = 0.dp
-    ) {
-        BottomNavBarItem.values().forEach { item ->
-            NavigationBarItem(
-                selected = currentRoute == item.route,
-                onClick = {
-                    if (currentRoute != item.route){
-                        navController.navigate(item.route){
-                            popUpTo(navController.graph.startDestinationId){ saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
+        NavigationBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White),
+            tonalElevation = 0.dp,
+        ) {
+            BottomNavBarItem.values().forEach { item ->
+                NavigationBarItem(
+                    selected = currentRoute == item.route,
+                    onClick = {
+                        if (currentRoute != item.route){
+                            navController.navigate(item.route){
+                                popUpTo(navController.graph.startDestinationId){ saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
-                    }
-                },
-                icon = {
-                    val iconId = when (item){
-                        BottomNavBarItem.Home -> R.drawable.navbarhome
-                        BottomNavBarItem.Expenses -> R.drawable.navbarexpenselog
-                        BottomNavBarItem.Analyzer -> R.drawable.navbaranalyser
-                        BottomNavBarItem.Profile -> R.drawable.navbarprofile
-                    }
-                    Image(
-                        painter = painterResource(id = iconId),
-                        contentDescription = item.label,
-                        modifier = Modifier.size(30.dp)
-                    )
-                },
-                label = { Text(item.label)}
-            )
+                    },
+                    icon = {
+                        val iconId = when (item){
+                            BottomNavBarItem.Home -> R.drawable.navbarhome
+                            BottomNavBarItem.Expenses -> R.drawable.navbarexpenselog
+                            BottomNavBarItem.Analyzer -> R.drawable.navbaranalyser
+                            BottomNavBarItem.Profile -> R.drawable.navbarprofile
+                        }
+                        Image(
+                            painter = painterResource(id = iconId),
+                            contentDescription = item.label,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    },
+                    label = { Text(item.label)}
+                )
+            }
         }
-    }
+
 }

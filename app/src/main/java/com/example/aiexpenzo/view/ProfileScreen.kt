@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.aiexpenzo.R
+import com.example.aiexpenzo.components.AppTopBar
 import com.example.aiexpenzo.components.BottomNavBar
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 
@@ -45,6 +46,7 @@ fun ProfileScreen(
     val user by viewModel.currentUser.collectAsState()
 
     Scaffold (
+        topBar = { AppTopBar() },
         bottomBar = { BottomNavBar(navController) }
     ){ innerPadding ->
 

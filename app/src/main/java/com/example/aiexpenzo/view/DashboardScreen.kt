@@ -24,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -35,7 +36,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.aiexpenzo.R
+import com.example.aiexpenzo.components.AppTopBar
 import com.example.aiexpenzo.components.BottomNavBar
 import com.example.aiexpenzo.components.EditValueDialog
 import com.example.aiexpenzo.data.constants.CategoryIconMap
@@ -56,7 +57,6 @@ import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-
 
 @Composable
 fun DashboardScreen(
@@ -125,7 +125,8 @@ fun DashboardScreen(
 
 
     Scaffold (
-        bottomBar = { BottomNavBar(navController)},
+        topBar = { AppTopBar()},
+        bottomBar = { BottomNavBar(navController)}
 
     ){ innerPadding ->
         Column(
@@ -139,7 +140,6 @@ fun DashboardScreen(
                     .weight(1f)
                     .fillMaxSize()
                     .verticalScroll(scrollState)
-
 
             ) {
                 // Header
@@ -238,7 +238,7 @@ fun DashboardScreen(
 
 
                         Text(
-                            "$${String.format("%,.2f", monthlyIncome)}",
+                            "RM${String.format("%,.2f", monthlyIncome)}",
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             color = colorResource(R.color.navyblue)
@@ -251,7 +251,7 @@ fun DashboardScreen(
                         Text("Money Out", fontSize = 12.sp, color = colorResource(R.color.navyblue))
 
                         Text(
-                            "-$${String.format("%,.2f", moneyOut)}",
+                            "-RM${String.format("%,.2f", moneyOut)}",
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             color = Color.Red
@@ -267,8 +267,6 @@ fun DashboardScreen(
                     Modifier.padding(horizontal = 24.dp, vertical = 10.dp),
 
                     ) {
-
-
                     Box(
                         Modifier.fillMaxWidth()
                             .height(32.dp)
@@ -327,7 +325,7 @@ fun DashboardScreen(
                 // Monthly Budget Card
                 Column(
                     modifier = Modifier.fillMaxSize()
-                        .padding(top = 20.dp, start = 24.dp, end = 24.dp, bottom = 16.dp)
+                        .padding(start = 24.dp, end = 24.dp, bottom = 10.dp)
                 ) {
 
                     Card(
@@ -335,10 +333,10 @@ fun DashboardScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                         colors = CardDefaults.cardColors(containerColor = colorResource(R.color.lightblue)),
                         modifier = Modifier.fillMaxWidth()
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 10.dp)
                     ) {
                         Row(
-                            Modifier.padding(20.dp),
+                            Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically,
 
                             ) {
@@ -356,8 +354,6 @@ fun DashboardScreen(
                                 )
 
                             }
-
-
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(
                                 modifier = Modifier.weight(1f)
@@ -398,7 +394,7 @@ fun DashboardScreen(
                                 }
 
                                 Text(
-                                    "$${String.format("%,.2f", monthlyBudget)}",
+                                    "RM${String.format("%,.2f", monthlyBudget)}",
                                     color = colorResource(R.color.navyblue),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
@@ -411,7 +407,7 @@ fun DashboardScreen(
                                     color = colorResource(R.color.navyblue)
                                 )
                                 Text(
-                                    "$${String.format("%,.2f", currentUsed)}",
+                                    "RM${String.format("%,.2f", currentUsed)}",
                                     color = if (currentUsed > monthlyBudget) Color.Red else colorResource(R.color.navyblue),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
@@ -426,7 +422,8 @@ fun DashboardScreen(
 
                 // Card background for lower section
                 Box(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .weight(1f)
                         .background(
                             colorResource(R.color.navyblue),
@@ -438,7 +435,7 @@ fun DashboardScreen(
 
                     Column(
                         modifier = Modifier.fillMaxSize()
-                            .padding(top = 40.dp, start = 24.dp, end = 24.dp, bottom = 16.dp)
+                            .padding(top = 30.dp, start = 20.dp, end = 20.dp, bottom = 10.dp)
                     ) {
                         Text(
 
@@ -469,19 +466,13 @@ fun DashboardScreen(
                                 }
                             } else{
 
-                                topCategories.forEachIndexed { index, cat ->
+                                topCategories.forEach{ cat ->
                                     Row(
                                         Modifier.fillMaxWidth()
                                             .padding(vertical = 10.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(
-                                            text = "${index + 1}.",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier.padding(end = 8.dp)
-                                        )
+
                                         val iconRes = CategoryIconMap[cat.title] ?: R.drawable.ic_other
 
                                         Image(
@@ -501,7 +492,7 @@ fun DashboardScreen(
 
                                         }
                                         Text(
-                                            "$${String.format("%.2f", cat.amount)}",
+                                            "RM${String.format("%.2f", cat.amount)}",
                                             color = Color.White,
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 15.sp,

@@ -72,7 +72,7 @@ fun ExpenseListItem(
         ){
             Text(expense.paymentMethod, style = MaterialTheme.typography.labelMedium)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = String.format("$%.2f", expense.amount),
+            Text(text = String.format("RM%.2f", expense.amount),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold)
         }

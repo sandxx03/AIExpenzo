@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aiexpenzo.R
+import com.example.aiexpenzo.components.AppTopBar
 import com.example.aiexpenzo.components.BottomNavBar
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 
@@ -105,6 +106,7 @@ fun EditProfileScreen(
     }
 
     Scaffold (
+        topBar = { AppTopBar() },
         bottomBar = { BottomNavBar(navController) }
     ){ innerPadding ->
 

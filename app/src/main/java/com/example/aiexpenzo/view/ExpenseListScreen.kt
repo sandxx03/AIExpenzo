@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aiexpenzo.R
+import com.example.aiexpenzo.components.AppTopBar
 import com.example.aiexpenzo.components.BottomNavBar
 import com.example.aiexpenzo.components.DailyLineChart
 import com.example.aiexpenzo.components.ExpenseListItem
@@ -95,6 +96,7 @@ fun ExpenseListScreen(
 
 
     Scaffold (
+        topBar = { AppTopBar() },
         bottomBar = {BottomNavBar(navController)}
     ){ innerPadding ->
 
@@ -233,7 +235,7 @@ fun ExpenseListScreen(
                                     )
                                     val totalAmount = expenses.sumOf { it.amount }
                                     Text(
-                                        text = "$ %.2f".format(totalAmount),
+                                        text = "RM%.2f".format(totalAmount),
                                         style = MaterialTheme.typography.bodySmall,
                                         color =  colorResource(R.color.navyblue),
                                         fontWeight = FontWeight.Bold
