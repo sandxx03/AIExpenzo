@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -74,10 +75,9 @@ fun DashboardScreen(
     var showEditIncomeDialog by remember { mutableStateOf(false) }
     var showEditBudgetDialog by remember { mutableStateOf(false) }
 
+    val monthFormatter = remember { SimpleDateFormat("MMM yyyy", Locale.getDefault()) }
     var selectedMonth by remember { mutableStateOf(Calendar.getInstance()) }
-
     val currentMonth = selectedMonth.get(Calendar.MONTH)
-
     val currentYear = selectedMonth.get(Calendar.YEAR)
 
     val monthlyIncome by remember(user, selectedMonth){
@@ -125,7 +125,7 @@ fun DashboardScreen(
 
 
     Scaffold (
-        topBar = { AppTopBar()},
+        topBar = { AppTopBar() },
         bottomBar = { BottomNavBar(navController)}
 
     ){ innerPadding ->
@@ -146,7 +146,8 @@ fun DashboardScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 16.dp),
-                    verticalAlignment = Alignment.Top
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(
                         modifier = Modifier.weight(1f)
@@ -164,7 +165,7 @@ fun DashboardScreen(
                     //Month selector
 
                     Row(
-                        horizontalArrangement = Arrangement.End
+                        verticalAlignment = Alignment.CenterVertically
                     ){
                         IconButton(onClick = {
                             selectedMonth = (selectedMonth.clone() as Calendar).apply {
@@ -173,12 +174,16 @@ fun DashboardScreen(
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Month")
                         }
 
-                        Text(
-                            text = SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(selectedMonth.time),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 25.sp,
-                            color = colorResource(R.color.navyblue)
-                        )
+                        Box(
+                            modifier = Modifier.background(Color(0xFF113A49), shape = CircleShape)
+                                .padding(horizontal = 14.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = monthFormatter.format(selectedMonth.time),
+                                color = Color.White,
+                                fontSize = 14.sp
+                            )
+                        }
 
                         IconButton(onClick = {
                             selectedMonth = (selectedMonth.clone() as Calendar).apply {

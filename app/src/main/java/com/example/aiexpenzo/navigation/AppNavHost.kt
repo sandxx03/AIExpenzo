@@ -1,6 +1,5 @@
 package com.example.aiexpenzo.navigation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
@@ -9,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.aiexpenzo.components.BottomNavBarItem
 import com.example.aiexpenzo.data.model.Expense
 import com.example.aiexpenzo.view.AIAnalyzerScreen
+import com.example.aiexpenzo.view.AppGuideScreen
 import com.example.aiexpenzo.view.DashboardScreen
 import com.example.aiexpenzo.view.EditProfileScreen
 import com.example.aiexpenzo.view.ExpenseListScreen
@@ -34,13 +34,13 @@ fun AppNavHost(
     authViewModel: AuthViewModel,
     expenseViewModel: ExpenseViewModel,
     aiAnalyzerViewModel: AiAnalyzerViewModel,
-    qrStatementViewModel: QRStatementViewModel
+    qrStatementViewModel: QRStatementViewModel,
 ){
 
 
     NavHost(
         navController = navController,
-        startDestination = "onboarding"
+        startDestination = "onboarding",
     ) {
 
         // Auth Screens
@@ -142,6 +142,10 @@ fun AppNavHost(
 
         composable("edit_profile") {
             EditProfileScreen(navController, authViewModel)}
+
+        composable("help"){
+            AppGuideScreen(navController)
+        }
 
 
 }

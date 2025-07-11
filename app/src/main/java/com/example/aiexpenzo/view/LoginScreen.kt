@@ -112,14 +112,6 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel){
 
 
             )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Forgot Password?",
-                color = colorResource(R.color.navyblue),
-                fontSize = 12.sp,
-                modifier = Modifier.align(Alignment.End).clickable {  }
-            )
 
             Spacer(modifier = Modifier.height(24.dp))
 

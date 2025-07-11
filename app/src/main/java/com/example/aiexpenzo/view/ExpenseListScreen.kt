@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -112,65 +113,54 @@ fun ExpenseListScreen(
                     .fillMaxHeight()    // not fillMaxSize() because will exceed bounds if innerPadding not respected
 
             ) {
+
                 // Header
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Expense Log",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    color = colorResource(R.color.navyblue),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(top = 12.dp, bottom = 8.dp)
-
-                )
-
-                // Month Selector
                 Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    IconButton(onClick = {
-                        selectedMonth = (selectedMonth.clone() as Calendar).apply {
-                            add(Calendar.MONTH, -1)
+                    Text(
+                        text = "Expense Log",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        color = colorResource(R.color.navyblue),
+                        textAlign = TextAlign.Center,
+                    )
+
+                    //Month selector
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        IconButton(onClick = {
+                            selectedMonth = (selectedMonth.clone() as Calendar).apply {
+                                add(Calendar.MONTH, -1)}
+                        }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Month")
                         }
-                    }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Previous Month",
-                            tint = Color(0xFF113A49),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Box(
-                        modifier = Modifier.background(Color(0xFF113A49), shape = CircleShape)
-                            .padding(horizontal = 14.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = monthFormatter.format(selectedMonth.time),
-                            color = Color.White,
-                            fontSize = 14.sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    IconButton(onClick = {
-                        selectedMonth = (selectedMonth.clone() as Calendar).apply {
-                            add(Calendar.MONTH, +1)
+
+                        Box(
+                            modifier = Modifier.background(Color(0xFF113A49), shape = CircleShape)
+                                .padding(horizontal = 14.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = monthFormatter.format(selectedMonth.time),
+                                color = Color.White,
+                                fontSize = 14.sp
+                            )
                         }
-                    }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Next Month",
-                            tint = Color(0xFF113A49),
-                            modifier = Modifier.size(24.dp)
-                        )
+                        IconButton(onClick = {
+                            selectedMonth = (selectedMonth.clone() as Calendar).apply {
+                                add(Calendar.MONTH, 1) }
+                        }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Month")
+                        }
                     }
                 }
+
                 // Line Chart
                 Box(
                     modifier = Modifier.fillMaxWidth()
@@ -250,8 +240,14 @@ fun ExpenseListScreen(
                                         navController.currentBackStackEntry?.savedStateHandle?.set("editable_expense", expenses[idx])
                                         navController.navigate("edit_expense")
                                     })
+                                Divider(
+                                    color = Color.White.copy(alpha = 0.2f),
+                                    thickness = 0.5.dp,
+                                )
                             }
                         }
+
+
                     }
 
 
@@ -262,14 +258,14 @@ fun ExpenseListScreen(
             // FAB with modal bottom sheet
             Box(
                 modifier = Modifier.fillMaxSize()
-                    .padding(bottom = 50.dp, end = 20.dp),
-                contentAlignment = Alignment.BottomEnd
+                    .padding(bottom = 20.dp),
+                contentAlignment = Alignment.BottomCenter
             ) {
                 FloatingActionButton(
                     onClick = { showAddOptions = true },
-                    containerColor = colorResource(R.color.navyblue),
+                    containerColor = colorResource(R.color.lightblue),
                     shape = CircleShape,
-                    contentColor = Color.White
+                    contentColor = colorResource(R.color.navyblue)
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add Expense")
                 }

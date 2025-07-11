@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -33,10 +35,11 @@ fun BottomNavBar(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-        NavigationBar(
+    NavigationBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White),
+                .background(colorResource(R.color.lightblue)),
+        containerColor = colorResource(R.color.lightblue),
             tonalElevation = 0.dp,
         ) {
             BottomNavBarItem.values().forEach { item ->
@@ -61,10 +64,19 @@ fun BottomNavBar(
                         Image(
                             painter = painterResource(id = iconId),
                             contentDescription = item.label,
-                            modifier = Modifier.size(30.dp)
+                            modifier = Modifier.size(30.dp),
+                            alpha = if(currentRoute == item.route) 1f else 0.6f
                         )
                     },
-                    label = { Text(item.label)}
+                    label = { Text(item.label)},
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color.Unspecified,
+                        unselectedIconColor = Color.Unspecified,
+                        selectedTextColor = Color.Black,
+                        unselectedTextColor = Color.Gray,
+                        indicatorColor = Color.Transparent
+                    )
+
                 )
             }
         }
