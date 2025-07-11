@@ -42,7 +42,7 @@ import com.example.aiexpenzo.components.BottomNavBar
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 
 @Composable
-fun EditProfileScreen(
+fun UpdateProfileScreen(
     navController: NavController,
     viewModel: AuthViewModel,
 ){
@@ -128,7 +128,7 @@ fun EditProfileScreen(
                 Spacer(Modifier.width((6.dp)))
 
                 Text(
-                    text = "Edit Profile",
+                    text = "Update Profile",
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp,
                     color = colorResource(R.color.navyblue)

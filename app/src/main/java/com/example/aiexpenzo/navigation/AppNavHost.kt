@@ -2,15 +2,22 @@ package com.example.aiexpenzo.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.aiexpenzo.components.BottomNavBarItem
 import com.example.aiexpenzo.data.model.Expense
+import com.example.aiexpenzo.util.RequestNotificationPermission
+import com.example.aiexpenzo.util.cancelDailyReminder
+import com.example.aiexpenzo.util.scheduleDailyReminder
 import com.example.aiexpenzo.view.AIAnalyzerScreen
 import com.example.aiexpenzo.view.AppGuideScreen
 import com.example.aiexpenzo.view.DashboardScreen
-import com.example.aiexpenzo.view.EditProfileScreen
 import com.example.aiexpenzo.view.ExpenseListScreen
 import com.example.aiexpenzo.view.LoginScreen
 import com.example.aiexpenzo.view.ManualAddExpenseScreen
@@ -18,7 +25,9 @@ import com.example.aiexpenzo.view.MonthlyBudgetPromptScreen
 import com.example.aiexpenzo.view.MonthlyIncomePromptScreen
 import com.example.aiexpenzo.view.OnboardingScreen
 import com.example.aiexpenzo.view.ProfileScreen
+import com.example.aiexpenzo.view.SettingsScreen
 import com.example.aiexpenzo.view.SignUpScreen
+import com.example.aiexpenzo.view.UpdateProfileScreen
 import com.example.aiexpenzo.view.UploadQrPayStatementScreen
 import com.example.aiexpenzo.viewmodel.AiAnalyzerViewModel
 import com.example.aiexpenzo.viewmodel.AuthViewModel
@@ -140,11 +149,29 @@ fun AppNavHost(
         composable(BottomNavBarItem.Profile.route){
             ProfileScreen(navController, authViewModel)}
 
-        composable("edit_profile") {
-            EditProfileScreen(navController, authViewModel)}
+        composable("update_profile") {
+            UpdateProfileScreen(navController, authViewModel)}
 
         composable("help"){
             AppGuideScreen(navController)
+        }
+        composable("settings"){
+            val context = LocalContext.current
+            var isReminderEnabled by rememberSaveable { mutableStateOf(false) }
+            RequestNotificationPermission()
+            SettingsScreen(
+                navController = navController,
+                isReminderEnabled = isReminderEnabled,
+                onToggleReminder = { enabled ->
+                    isReminderEnabled = enabled
+                    if (enabled) {
+                        scheduleDailyReminder(context)
+                    } else {
+                        cancelDailyReminder(context)
+                    }
+
+                }
+            )
         }
 
 

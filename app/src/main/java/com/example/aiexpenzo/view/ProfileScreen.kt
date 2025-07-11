@@ -79,7 +79,7 @@ fun ProfileScreen(
             ) {
                 //Edit profile button
                 Button(
-                    onClick = {navController.navigate("edit_profile")},
+                    onClick = {navController.navigate("update_profile")},
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp),
@@ -93,18 +93,18 @@ fun ProfileScreen(
                     ){
                         Image(
                             painter = painterResource(R.drawable.ic_profilesettings),
-                            contentDescription = "Edit Profile",
+                            contentDescription = "Update Profile",
                             modifier = Modifier.size(30.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Edit Profile",
+                        Text("Update Profile",
                             color= colorResource(R.color.navyblue),
                             fontSize = 18.sp)
                     }
 
 
                 }
-                //TODO
+
                 Button(
                     onClick = {navController.navigate("settings")},
                     modifier = Modifier
