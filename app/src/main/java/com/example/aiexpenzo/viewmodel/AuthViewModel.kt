@@ -1,18 +1,12 @@
 package com.example.aiexpenzo.viewmodel
 
 import android.util.Log
-import android.util.Patterns
-import android.view.View
-import androidx.compose.animation.core.snap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aiexpenzo.data.firebase.FirebaseService
 import com.example.aiexpenzo.data.model.User
 import com.example.aiexpenzo.data.repository.FirestoreUserRepository
-import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

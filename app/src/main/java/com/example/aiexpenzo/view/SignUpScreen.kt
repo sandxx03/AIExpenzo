@@ -46,7 +46,10 @@ import com.example.aiexpenzo.R
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 
 @Composable
-fun SignUpScreen(navController: NavController, viewModel: AuthViewModel){
+fun SignUpScreen(
+    navController: NavController,
+    viewModel: AuthViewModel
+){
     var name by remember{ mutableStateOf("")}
     var email by remember { mutableStateOf("") }
 

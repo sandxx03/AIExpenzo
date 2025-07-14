@@ -2,7 +2,6 @@ package com.example.aiexpenzo.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,22 +49,11 @@ import com.example.aiexpenzo.components.AppTopBar
 import com.example.aiexpenzo.components.BottomNavBar
 import com.example.aiexpenzo.components.DailyLineChart
 import com.example.aiexpenzo.components.ExpenseListItem
+import com.example.aiexpenzo.components.SheetOption
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-
-@Composable
-private fun SheetOption(text: String, onClick:() -> Unit){
-    Box(
-        modifier = Modifier.fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 20.dp, horizontal = 28.dp),
-        contentAlignment = Alignment.CenterStart
-    ){
-        Text(text, fontSize = 18.sp, color = Color(0xFF113A49))
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,9 +81,8 @@ fun ExpenseListScreen(
     )
 
 
-
     Scaffold (
-        topBar = { AppTopBar() },
+        topBar = { AppTopBar(title = "Expense Log") },
         bottomBar = {BottomNavBar(navController)}
     ){ innerPadding ->
 
@@ -115,25 +100,13 @@ fun ExpenseListScreen(
             ) {
 
                 // Header
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Expense Log",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp,
-                        color = colorResource(R.color.navyblue),
-                        textAlign = TextAlign.Center,
-                    )
-
-                    //Month selector
-
+                //Month selector
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ){
                         IconButton(onClick = {
                             selectedMonth = (selectedMonth.clone() as Calendar).apply {
@@ -158,7 +131,7 @@ fun ExpenseListScreen(
                         }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Month")
                         }
-                    }
+
                 }
 
                 // Line Chart
@@ -263,9 +236,9 @@ fun ExpenseListScreen(
             ) {
                 FloatingActionButton(
                     onClick = { showAddOptions = true },
-                    containerColor = colorResource(R.color.lightblue),
+                    containerColor = colorResource(R.color.navyblue),
                     shape = CircleShape,
-                    contentColor = colorResource(R.color.navyblue)
+                    contentColor = colorResource(R.color.lightblue)
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add Expense")
                 }

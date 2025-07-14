@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.aiexpenzo.R
+import com.example.aiexpenzo.components.AppTopBar
+import com.example.aiexpenzo.components.BottomNavBar
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
@@ -42,8 +45,6 @@ data class OnboardingPage(val text: String, val imageRes: Int)
 
 @Composable
 fun OnboardingScreen(navController: NavController) {
-    val darkcolor = colorResource(id = R.color.navyblue)
-    val lightcolor = colorResource(id = R.color.lightblue)
     val pagerState = rememberPagerState()
 
     val pages = listOf(
@@ -52,111 +53,113 @@ fun OnboardingScreen(navController: NavController) {
         OnboardingPage("Predict and plan your future expenses.", R.drawable.onboardingimage3)
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .statusBarsPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(80.dp))
-
-        Text(
-            text = "Get Started!",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        HorizontalPager(
-            count = pages.size,
-            state = pagerState,
+        Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        ) { page ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                .fillMaxSize()
+                .background(Color.White)
+                .statusBarsPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(80.dp))
+
+            Text(
+                text = "Get Started!",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            HorizontalPager(
+                count = pages.size,
+                state = pagerState,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = pages[page].imageRes),
-                    contentDescription = "Onboarding Image",
-                    modifier = Modifier.size(300.dp)
-                )
-                Spacer(modifier = Modifier.height(30.dp))
-                Text(
-                    text = pages[page].text,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                DotsIndicator(totalDots = pages.size, selectedIndex = page, pagerState = pagerState)
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) { page ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = pages[page].imageRes),
+                        contentDescription = "Onboarding Image",
+                        modifier = Modifier.size(300.dp)
+                    )
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(
+                        text = pages[page].text,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    DotsIndicator(totalDots = pages.size, selectedIndex = page, pagerState = pagerState)
+                }
+            }
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = {navController.navigate("signup")},
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp,
+                        focusedElevation = 4.dp
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.navyblue)
+                    )
+                ) {
+                    Text(
+                        "SIGN UP",
+                        color = colorResource(R.color.white),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = {navController.navigate("login")},
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp,
+                        focusedElevation = 4.dp
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.lightblue),
+                        contentColor = colorResource(R.color.navyblue)
+                    )
+                ) {
+                    Text(
+                        "LOGIN",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(90.dp))
             }
         }
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(
-                onClick = {navController.navigate("signup")},
-                shape = RoundedCornerShape(10.dp),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 8.dp,
-                    pressedElevation = 12.dp,
-                    focusedElevation = 4.dp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = darkcolor
-                )
-            ) {
-                Text(
-                    "SIGN UP",
-                    color = colorResource(R.color.white),
-                    fontWeight = FontWeight.Bold
-                )
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(
-                onClick = {navController.navigate("login")},
-                shape = RoundedCornerShape(10.dp),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 8.dp,
-                    pressedElevation = 12.dp,
-                    focusedElevation = 4.dp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = lightcolor,
-                    contentColor = darkcolor
-                )
-            ) {
-                Text(
-                    "LOGIN",
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(90.dp))
-        }
-    }
 }
 
 @Composable
 fun DotsIndicator(totalDots: Int, selectedIndex: Int, pagerState: PagerState) {
-    val navyBlue = colorResource(id = R.color.navyblue)
+    val navyBlue = colorResource(R.color.navyblue)
     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
         repeat(totalDots) { index ->
             val isSelected = index == pagerState.currentPage

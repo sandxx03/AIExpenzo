@@ -51,7 +51,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
 
-
     //my imports
     implementation ("androidx.compose.ui:ui:1.5.0")
     implementation ("androidx.compose.ui:ui-tooling-preview:1.5.0")
@@ -70,10 +69,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-
-
-
-
+    implementation("com.google.protobuf:protobuf-javalite:3.21.7")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -22,19 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.AppTopBar
 import com.example.aiexpenzo.components.BottomNavBar
-import com.example.aiexpenzo.util.cancelDailyReminder
-import com.example.aiexpenzo.util.scheduleDailyReminder
 
 
 @Composable
@@ -44,10 +39,9 @@ fun SettingsScreen(
     onToggleReminder: (Boolean) -> Unit
 
 ){
-    val context = LocalContext.current
 
     Scaffold (
-        topBar = { AppTopBar() },
+        topBar = { AppTopBar(title = "Settings") },
         bottomBar = { BottomNavBar(navController) }
     ) { innerPadding ->
 
@@ -117,14 +111,4 @@ fun SettingsScreen(
         }
     }
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SettingsScreenPreview(){
-    SettingsScreen(
-        navController = rememberNavController(),
-        isReminderEnabled = true,
-        onToggleReminder = {}
-    )
 }

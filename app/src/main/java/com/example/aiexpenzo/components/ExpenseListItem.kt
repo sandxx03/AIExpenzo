@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -42,7 +43,7 @@ fun ExpenseListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(colorResource(R.color.navyblue))
+            .background(colorResource(R.color.lightblue))
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .clickable { onClick() }
     ){
@@ -55,7 +56,8 @@ fun ExpenseListItem(
                 painter = painterResource(id = iconRes),
                 contentDescription = expense.category,
                 modifier = Modifier.size(40.dp)
-                    .background(Color.Transparent, shape = RoundedCornerShape(10.dp))
+                    .background(Color.Transparent, shape = RoundedCornerShape(10.dp)),
+                colorFilter = ColorFilter.tint(colorResource(R.color.navyblue))
             )
 
             Spacer(Modifier.width(12.dp))
@@ -64,12 +66,12 @@ fun ExpenseListItem(
             ) {
                 Text(
                     expense.description, style = MaterialTheme.typography.bodyLarge,
-                    color = colorResource(R.color.white)
+                    color = colorResource(R.color.navyblue)
                 )
                 Text(expense.category,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    color = colorResource(R.color.white))
+                    color = colorResource(R.color.navyblue))
 
             }
         }
@@ -81,14 +83,14 @@ fun ExpenseListItem(
         ){
             Text(expense.paymentMethod,
                 style = MaterialTheme.typography.labelMedium,
-                color = colorResource(R.color.white)
+                color = colorResource(R.color.navyblue)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = String.format("RM%.2f", expense.amount),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(R.color.white)
+                color = colorResource(R.color.navyblue)
             )
 
         }

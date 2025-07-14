@@ -84,6 +84,7 @@ fun ManualAddExpenseScreen(
 
     var navigateAfterSave by remember { mutableStateOf(false)}
     val isLoading by expenseViewModel.isLoading.collectAsState()
+
     LaunchedEffect(isLoading) {
         if (!isLoading && navigateAfterSave) {
             qrStatementViewModel.clearParsedData()

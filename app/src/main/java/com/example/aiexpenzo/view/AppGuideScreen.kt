@@ -41,7 +41,7 @@ fun AppGuideScreen(
 
 
     Scaffold (
-        topBar = { AppTopBar() },
+        topBar = { AppTopBar(title = "App Guide") },
         bottomBar = { BottomNavBar(navController) }
     ) { innerPadding ->
 

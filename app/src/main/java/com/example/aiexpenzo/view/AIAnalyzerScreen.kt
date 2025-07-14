@@ -67,7 +67,7 @@ fun AIAnalyzerScreen(
     }
 
     Scaffold(
-        topBar = { AppTopBar() },
+        topBar = { AppTopBar(title = "AI Analyzer") },
         bottomBar = { BottomNavBar(navController) },
 
         ) { innerPadding ->
@@ -75,36 +75,18 @@ fun AIAnalyzerScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            colorResource(R.color.lightblue),
-                            colorResource(R.color.navyblue)
-                        )
-                    )
+                .background(Color.White
+
                 )
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 24.dp, vertical = 32.dp)
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Header
-                Text(
-                    text = "Spendings Analyzer",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    color = colorResource(R.color.navyblue),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp, bottom = 8.dp)
-
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
                     text = "Let AIExpenzo analyze your spendings.",
                     fontWeight = FontWeight.Bold,
@@ -154,7 +136,7 @@ fun AIAnalyzerScreen(
                         modifier = Modifier.size(140.dp)
                             .shadow(8.dp, CircleShape),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.lightblue)
+                            containerColor = colorResource(R.color.navyblue)
                         )
                     ) {
                         Icon(

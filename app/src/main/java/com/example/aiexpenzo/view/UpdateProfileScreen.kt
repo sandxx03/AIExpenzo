@@ -1,6 +1,7 @@
 package com.example.aiexpenzo.view
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -75,6 +77,8 @@ fun UpdateProfileScreen(
             },
             confirmButton = {
                 Button(
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.navyblue)),
                     onClick = {
                         viewModel.updateProfile(
                             newName = name,
@@ -92,21 +96,26 @@ fun UpdateProfileScreen(
                         showPasswordDialog = false
                     }
                 ) {
-                    Text("Confirm")
+                    Text(text="Confirm",
+                        color = Color.White)
                 }
             },
             dismissButton = {
                 Button(
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
                     onClick = { showPasswordDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(
+                        text="Cancel",
+                        color = Color.Black)
                 }
             }
         )
     }
 
     Scaffold (
-        topBar = { AppTopBar() },
+        topBar = { AppTopBar(title = "Update Profile") },
         bottomBar = { BottomNavBar(navController) }
     ){ innerPadding ->
 
@@ -181,7 +190,6 @@ fun UpdateProfileScreen(
                     .padding(bottom = 30.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
 
                 Button(
                     onClick = {navController.popBackStack()},

@@ -11,7 +11,9 @@ import com.example.aiexpenzo.viewmodel.AuthViewModel
 import java.util.Calendar
 
 @Composable
-fun MonthlyBudgetPromptScreen(navController: NavController,viewModel: AuthViewModel)
+fun MonthlyBudgetPromptScreen(
+    navController: NavController,
+    viewModel: AuthViewModel)
 {
     val calendar = Calendar.getInstance()
     val month = calendar.get(Calendar.MONTH)

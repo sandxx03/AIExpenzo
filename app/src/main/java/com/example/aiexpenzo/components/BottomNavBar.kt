@@ -38,8 +38,8 @@ fun BottomNavBar(
     NavigationBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(colorResource(R.color.lightblue)),
-        containerColor = colorResource(R.color.lightblue),
+                .background(Color.White),
+        containerColor = Color.White,
             tonalElevation = 0.dp,
         ) {
             BottomNavBarItem.values().forEach { item ->

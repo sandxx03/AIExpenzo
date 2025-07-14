@@ -49,6 +49,7 @@ fun DailyLineChart(
                    setDrawLabels(true)
                    setDrawAxisLine(true)
                    setDrawGridLines(true)
+                   axisMinimum = 0f // Y-axis starts from 0
                    textSize = 12f
                    textColor = Color.BLACK
                }
@@ -59,7 +60,7 @@ fun DailyLineChart(
 
 
                //Legend
-                legend.isEnabled = true
+               legend.isEnabled = true
                legend.textSize = 12f
                legend.form = Legend.LegendForm.LINE
                legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
@@ -72,16 +73,15 @@ fun DailyLineChart(
         },
         update = {chart ->
             val entries = dailyTotals.mapIndexed{ index, value ->
-                BarEntry((index + 1).toFloat(), value)
+                BarEntry((index + 1).toFloat(), maxOf(0f,value))
             }
             val dataSet = LineDataSet(entries, "Daily Totals").apply {
                 color = Color.rgb(33, 57, 93)
                 valueTextColor = Color.BLACK
                 lineWidth = 2f
-                circleRadius = 3f
-                setCircleColor(Color.rgb(33, 57, 93))
+                setDrawCircles(false)   // remove nodes
                 setDrawValues(false)
-                mode = LineDataSet.Mode.CUBIC_BEZIER
+                mode = LineDataSet.Mode.LINEAR
 
             }
             chart.data = LineData(dataSet)

@@ -2,11 +2,10 @@ package com.example.aiexpenzo.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,6 +32,7 @@ import com.example.aiexpenzo.viewmodel.AiAnalyzerViewModel
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 import com.example.aiexpenzo.viewmodel.QRStatementViewModel
+import com.example.aiexpenzo.viewmodel.SettingsViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -157,13 +157,16 @@ fun AppNavHost(
         }
         composable("settings"){
             val context = LocalContext.current
-            var isReminderEnabled by rememberSaveable { mutableStateOf(false) }
+            val viewModel:SettingsViewModel = viewModel()
+            val reminderEnabled by viewModel.reminderEnabled.collectAsState()
+
             RequestNotificationPermission()
+
             SettingsScreen(
                 navController = navController,
-                isReminderEnabled = isReminderEnabled,
+                isReminderEnabled = reminderEnabled,
                 onToggleReminder = { enabled ->
-                    isReminderEnabled = enabled
+                    viewModel.setReminder(enabled)
                     if (enabled) {
                         scheduleDailyReminder(context)
                     } else {

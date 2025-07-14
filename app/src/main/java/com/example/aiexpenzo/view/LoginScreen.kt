@@ -48,7 +48,10 @@ import com.example.aiexpenzo.viewmodel.AuthViewModel
 import java.util.Calendar
 
 @Composable
-fun LoginScreen(navController: NavController, viewModel: AuthViewModel){
+fun LoginScreen(
+    navController: NavController,
+    viewModel: AuthViewModel){
+
     var email by remember { mutableStateOf("")}
     var password by remember { mutableStateOf("")}
     val context = LocalContext.current
@@ -71,7 +74,9 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel){
                     Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back")
                 }
-                Text(text="Login", fontSize = 20.sp, fontWeight = FontWeight.Bold, color= colorResource(R.color.navyblue),
+                Text(text="Login", fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color= colorResource(R.color.navyblue),
                     modifier = Modifier.padding(start=4.dp))
 
             }
@@ -119,10 +124,10 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel){
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.lightblue),
-                    contentColor = colorResource(R.color.navyblue)
+                    containerColor = colorResource(R.color.navyblue),
+                    contentColor = Color.White
                 ) ){
-                Text("LOGIN", color = colorResource(R.color.navyblue), fontWeight = FontWeight.Bold)
+                Text("LOGIN", color = Color.White, fontWeight = FontWeight.Bold)
             }
 
 

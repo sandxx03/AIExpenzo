@@ -1,6 +1,5 @@
 package com.example.aiexpenzo.view
 
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,15 +22,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.AppTopBar
 import com.example.aiexpenzo.components.BottomNavBar
@@ -46,7 +42,7 @@ fun ProfileScreen(
     val user by viewModel.currentUser.collectAsState()
 
     Scaffold (
-        topBar = { AppTopBar() },
+        topBar = { AppTopBar(title = "Profile & Settings") },
         bottomBar = { BottomNavBar(navController) }
     ){ innerPadding ->
 
@@ -56,21 +52,8 @@ fun ProfileScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 15.dp)
         ){
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-            // Header
-            Text(
-                text = "Profile & Settings",
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                color = colorResource(R.color.navyblue),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 8.dp)
-
-            )
-            Spacer(modifier = Modifier.height(60.dp))
             Column (
                 modifier = Modifier
                     .padding(vertical = 15.dp)
@@ -96,6 +79,7 @@ fun ProfileScreen(
                             contentDescription = "Update Profile",
                             modifier = Modifier.size(30.dp)
                         )
+
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Update Profile",
                             color= colorResource(R.color.navyblue),
@@ -129,7 +113,6 @@ fun ProfileScreen(
                             fontSize = 18.sp)
                     }
                 }
-                //TODO
                 Button(
                     onClick = {navController.navigate("help")},
                     modifier = Modifier
