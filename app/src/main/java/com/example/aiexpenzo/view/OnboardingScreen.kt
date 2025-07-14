@@ -53,7 +53,7 @@ fun OnboardingScreen(navController: NavController) {
         OnboardingPage("Predict and plan your future expenses.", R.drawable.onboardingimage3)
     )
 
-        Column(
+    Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
