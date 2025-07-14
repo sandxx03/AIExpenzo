@@ -1,6 +1,7 @@
 package com.example.aiexpenzo.components
 
 import android.graphics.Color
+import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
@@ -22,8 +23,8 @@ fun DailyLineChart(
         modifier = modifier,
         factory = {context ->
            LineChart(context).apply{
-                layoutParams = android.view.ViewGroup.LayoutParams(
-                    android.view.ViewGroup.LayoutParams.MATCH_PARENT, 500
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, 500
                 )
 
                // X-Axis

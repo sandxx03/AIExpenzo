@@ -51,7 +51,7 @@ fun ProfileScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 15.dp)
         ){
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Column (
                 modifier = Modifier

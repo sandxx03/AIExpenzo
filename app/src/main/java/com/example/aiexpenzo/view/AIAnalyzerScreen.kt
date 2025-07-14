@@ -87,9 +87,21 @@ fun AIAnalyzerScreen(
                 Text(
                     text = "Let AIExpenzo analyze your spendings.",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     color = colorResource(R.color.navyblue),
                     textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp, bottom = 8.dp)
+
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Discover your expense breakdown, spending patterns, and spender type, along with tips to help you save smarter.",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = colorResource(R.color.navyblue),
+                    textAlign = TextAlign.Justify,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp, bottom = 8.dp)
@@ -107,7 +119,7 @@ fun AIAnalyzerScreen(
                         .padding(top = 12.dp, bottom = 8.dp)
 
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
                     text = "Click the button to start.",
@@ -120,7 +132,7 @@ fun AIAnalyzerScreen(
                         .padding(top = 12.dp, bottom = 8.dp)
 
                 )
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(25.dp))
 
                 Box(
                     modifier = Modifier.fillMaxWidth(),
