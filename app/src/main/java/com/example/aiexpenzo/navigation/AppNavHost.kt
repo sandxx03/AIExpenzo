@@ -2,18 +2,11 @@ package com.example.aiexpenzo.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.aiexpenzo.components.BottomNavBarItem
 import com.example.aiexpenzo.data.model.Expense
-import com.example.aiexpenzo.util.RequestNotificationPermission
-import com.example.aiexpenzo.util.cancelDailyReminder
-import com.example.aiexpenzo.util.scheduleDailyReminder
 import com.example.aiexpenzo.view.AIAnalyzerScreen
 import com.example.aiexpenzo.view.AppGuideScreen
 import com.example.aiexpenzo.view.DashboardScreen
@@ -44,6 +37,7 @@ fun AppNavHost(
     expenseViewModel: ExpenseViewModel,
     aiAnalyzerViewModel: AiAnalyzerViewModel,
     qrStatementViewModel: QRStatementViewModel,
+    settingsViewModel: SettingsViewModel
 ){
 
 
@@ -156,25 +150,7 @@ fun AppNavHost(
             AppGuideScreen(navController)
         }
         composable("settings"){
-            val context = LocalContext.current
-            val viewModel:SettingsViewModel = viewModel()
-            val reminderEnabled by viewModel.reminderEnabled.collectAsState()
-
-            RequestNotificationPermission()
-
-            SettingsScreen(
-                navController = navController,
-                isReminderEnabled = reminderEnabled,
-                onToggleReminder = { enabled ->
-                    viewModel.setReminder(enabled)
-                    if (enabled) {
-                        scheduleDailyReminder(context)
-                    } else {
-                        cancelDailyReminder(context)
-                    }
-
-                }
-            )
+            SettingsScreen(navController, settingsViewModel)
         }
 
 

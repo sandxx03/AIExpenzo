@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -82,7 +81,7 @@ fun ExpenseListScreen(
 
 
     Scaffold (
-        topBar = { AppTopBar(title = "Expense Log") },
+        topBar = { AppTopBar(title = "Expenses") },
         bottomBar = {BottomNavBar(navController)}
     ){ innerPadding ->
 
@@ -259,7 +258,7 @@ fun ExpenseListScreen(
                             navController.navigate("add_expense")
                         }
 
-                        SheetOption("Upload QR Pay Statement") {
+                        SheetOption("Upload QR Pay Statement/Receipt") {
                             showAddOptions = false
                             navController.navigate("upload_qr")
                         }

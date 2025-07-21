@@ -19,9 +19,12 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,15 +33,22 @@ import androidx.navigation.NavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.AppTopBar
 import com.example.aiexpenzo.components.BottomNavBar
+import com.example.aiexpenzo.util.RequestNotificationPermission
+import com.example.aiexpenzo.util.cancelDailyReminder
+import com.example.aiexpenzo.util.scheduleDailyReminder
+import com.example.aiexpenzo.viewmodel.SettingsViewModel
 
 
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    isReminderEnabled: Boolean,
-    onToggleReminder: (Boolean) -> Unit
+    viewModel: SettingsViewModel
 
 ){
+    val context = LocalContext.current
+    val reminderEnabled by viewModel.reminderEnabled.collectAsState()
+
+    RequestNotificationPermission()
 
     Scaffold (
         topBar = { AppTopBar(title = "Settings") },
@@ -65,7 +75,7 @@ fun SettingsScreen(
                 Spacer(Modifier.width((6.dp)))
 
                 Text(
-                    text = "Settings",
+                    text = "Back to Profile",
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp,
                     color = colorResource(R.color.navyblue)
@@ -95,8 +105,16 @@ fun SettingsScreen(
                         )
 
                         Switch(
-                            checked = isReminderEnabled,
-                            onCheckedChange = onToggleReminder,
+                            checked = reminderEnabled,
+                            onCheckedChange = { enabled ->
+                                viewModel.setReminder(enabled)
+                                if (enabled) {
+                                    scheduleDailyReminder(context)
+                                } else {
+                                    cancelDailyReminder(context)
+                                }
+
+                            },
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = Color.LightGray,
                                 checkedTrackColor = colorResource(id = R.color.navyblue),

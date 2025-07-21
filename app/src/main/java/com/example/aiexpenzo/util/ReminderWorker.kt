@@ -9,16 +9,20 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.aiexpenzo.R
 
+// Background worker for showing notification
+// Executes in background via WorkManager
 class ReminderWorker(
     context: Context,
     workerParams: WorkerParameters
 ): Worker(context, workerParams){
 
+    // called when task runs - show notification and returns success
     override fun doWork(): Result {
         showReminderNotification()
         return Result.success()
     }
 
+    // Create NotificationChannel and build notification to prompt users to log their expenses
     private fun showReminderNotification(){
         val channelId = "expense_reminder_channel"
         val notificationManager =

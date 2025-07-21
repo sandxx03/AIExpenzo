@@ -13,6 +13,7 @@ import com.example.aiexpenzo.viewmodel.AiAnalyzerViewModel
 import com.example.aiexpenzo.viewmodel.AuthViewModel
 import com.example.aiexpenzo.viewmodel.ExpenseViewModel
 import com.example.aiexpenzo.viewmodel.QRStatementViewModel
+import com.example.aiexpenzo.viewmodel.SettingsViewModel
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +30,8 @@ class MainActivity : ComponentActivity() {
                 val expenseViewModel: ExpenseViewModel = viewModel()
                 val aiAnalyzerViewModel: AiAnalyzerViewModel = viewModel()
                 val qrStatementViewModel: QRStatementViewModel = viewModel()
-                AppNavHost(navController, authViewModel, expenseViewModel, aiAnalyzerViewModel, qrStatementViewModel)
+                val settingsViewModel: SettingsViewModel = viewModel()
+                AppNavHost(navController, authViewModel, expenseViewModel, aiAnalyzerViewModel, qrStatementViewModel, settingsViewModel)
             }
 
         }

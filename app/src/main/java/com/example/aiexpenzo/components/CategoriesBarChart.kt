@@ -14,7 +14,7 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 
 @Composable
-fun TopCategoriesBarChart(
+fun CategoriesBarChart(
     modifier: Modifier = Modifier,
     categories: List<CategorySpend>
 ){
@@ -24,39 +24,63 @@ fun TopCategoriesBarChart(
             BarChart(context).apply{
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    500
+                    ViewGroup.LayoutParams.WRAP_CONTENT
                 )
                 description.isEnabled = false
                 legend.isEnabled = false
                 axisRight.isEnabled = false
 
+                // Disable touch interactions
+                setTouchEnabled(false)
+                isHighlightPerTapEnabled = false
+                isHighlightPerDragEnabled = false
+
                 axisLeft.apply {
                     axisMinimum = 0f
-                    textColor= Color.WHITE
+                    textColor= Color.BLACK
                 }
 
-                xAxis.apply {
-                    position = XAxis.XAxisPosition.BOTTOM
-                    setDrawGridLines(false)
-                    setDrawAxisLine(true)
-                    textColor = Color.WHITE
-                    granularity = 1f
-                    valueFormatter = IndexAxisValueFormatter(categories.map { it.title })
-                }
+                setupXAxis(categories.map { it.title })
             }
         },
         update = { chart ->
+            // ensure x-axis labels stay aligned and refreshed
+            chart.setupXAxis(categories.map { it.title })
+
+            // map entries with correct index
             val entries = categories.mapIndexed{index, cat ->
-                BarEntry(index.toFloat(), cat.amount.toFloat())
+                BarEntry(index.toFloat(), cat.amount.coerceAtLeast(0f))
             }
             val dataSet = BarDataSet(entries, "").apply {
-                color = Color.rgb(100, 181, 246)
-                valueTextColor = Color.WHITE
+                color = Color.rgb(33, 57, 93)
+                valueTextColor = Color.BLACK
                 valueTextSize = 12f
             }
-            chart.data = BarData(dataSet)
+            val barData = BarData(dataSet).apply {
+                barWidth = 0.9f  // Set bar width less than 1.0 to avoid bars sticking together
+            }
+            chart.data = barData
+
             chart.invalidate()
 
         }
     )
+}
+
+private fun BarChart.setupXAxis(labels: List<String>){
+    xAxis.apply {
+        valueFormatter = IndexAxisValueFormatter(labels)
+        granularity = 1f
+        isGranularityEnabled = true
+        setLabelCount(labels.size)
+        labelRotationAngle = 90f
+        axisMinimum = -0.5f
+        axisMaximum = labels.size.toFloat()
+        position = XAxis.XAxisPosition.BOTTOM
+        setDrawGridLines(false)
+        setDrawAxisLine(true)
+        textSize = 12f
+        textColor = Color.BLACK
+    }
+
 }

@@ -32,7 +32,7 @@ fun AppGuideSection(
 ) {
 
     Column(
-        modifier = Modifier.padding(bottom = 18.dp)
+        modifier = Modifier.padding(bottom = 10.dp)
     ) {
         Card(
             modifier = Modifier.fillMaxWidth()

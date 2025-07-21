@@ -2,7 +2,7 @@ package com.example.aiexpenzo.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.aiexpenzo.data.firebase.FirebaseService
+import com.example.aiexpenzo.data.constants.EXPENSE_CATEGORIES
 import com.example.aiexpenzo.data.firebase.FirebaseService.auth
 import com.example.aiexpenzo.data.model.CategorySpend
 import com.example.aiexpenzo.data.model.Expense
@@ -17,7 +17,7 @@ import java.util.Calendar
 import java.util.Locale
 
 class ExpenseViewModel: ViewModel() {
-    private val db = FirebaseService.firestore
+    private val repo = FirestoreExpenseRepository
     private val _allExpenses = MutableStateFlow<List<Expense>>(emptyList())
     val allExpense: StateFlow<List<Expense>> = _allExpenses.asStateFlow()
 
@@ -37,22 +37,18 @@ class ExpenseViewModel: ViewModel() {
         }
     }
 
-
     private fun setupExpenseListener(){
-        expensesListener?.remove()
-        val uid = auth.currentUser?.uid ?: return run { _isLoading.value = false}
-
         _isLoading.value = true
-        expensesListener = db
-            .collection("users").document(uid)
-            .collection("expenses")
-            .addSnapshotListener{ snapshot, error ->
-                if (error != null)
-                    return@addSnapshotListener run {_isLoading.value = false}
-
-                _allExpenses.value = snapshot?.toObjects(Expense::class.java) ?: emptyList()
+        repo.listenToExpenses(
+            onDataChanged = { expenses ->
+                _allExpenses.value = expenses
+                _isLoading.value = false
+            },
+            onError = {
                 _isLoading.value = false
             }
+        )
+
     }
 
     override fun onCleared() {
@@ -66,7 +62,7 @@ class ExpenseViewModel: ViewModel() {
 
             try {
                 // Firestore listener will eventually sync and update
-                FirestoreExpenseRepository.addExpense(expense)
+                repo.addExpense(expense)
             } finally {
                 _isLoading.value = false
 
@@ -80,7 +76,7 @@ class ExpenseViewModel: ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try{
-                FirestoreExpenseRepository.updateExpense(updatedExpense)
+                repo.updateExpense(updatedExpense)
             }finally {
                 _isLoading.value = false
             }
@@ -92,7 +88,7 @@ class ExpenseViewModel: ViewModel() {
        viewModelScope.launch {
            _isLoading.value = true
            try {
-               FirestoreExpenseRepository.deleteExpense(expense.id)
+               repo.deleteExpense(expense.id)
            } finally {
                _isLoading.value = false
            }
@@ -117,7 +113,7 @@ class ExpenseViewModel: ViewModel() {
         return getExpensesForMonth(month, year).isNotEmpty()
     }
 
-    // Function - get Expense Data for Chart
+    // Function - get Expense Data for Line Chart
     fun getDailyTotalsForMonth(month: Int, year: Int): List<Float>{
         val daysInMonth = Calendar.getInstance().apply {
             set(Calendar.MONTH, month)
@@ -168,8 +164,37 @@ class ExpenseViewModel: ViewModel() {
                 .take(3)
     }
 
+    // Function - get total spent per category (all categories) for Bar Chart
+    fun getAllCategories(month: Int, year: Int): List<CategorySpend>{
+        val expensesThisMonth = _allExpenses.value.filter { expense ->
+            val cal = Calendar.getInstance().apply { time = expense.transactionDate }
+            cal.get(Calendar.MONTH) == month && cal.get(Calendar.YEAR) == year
+        }
+
+        val groupedExpenses = expensesThisMonth.groupBy { it.category }
+
+        return EXPENSE_CATEGORIES.map { categoryName ->
+            val expensesInCategory = groupedExpenses[categoryName] ?: emptyList()
+
+            val totalAmount = expensesInCategory.sumOf { it.amount }.toFloat()
+
+            val latestDate = expensesInCategory.maxByOrNull { it.transactionDate.time }?.transactionDate
+            val formattedDate = if (latestDate != null) {
+                SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(latestDate)
+            } else {
+                "-"
+            }
+
+            CategorySpend(
+                title = categoryName,
+                amount = totalAmount,
+                date = formattedDate
+            )
+        }.sortedByDescending { it.amount }
+    }
+
     fun clearData(){
-        expensesListener?.remove()
+        repo.removeListener()
         _allExpenses.value = emptyList()
         _isLoading.value = false
     }

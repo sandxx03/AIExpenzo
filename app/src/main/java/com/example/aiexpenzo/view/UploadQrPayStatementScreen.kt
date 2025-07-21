@@ -120,7 +120,7 @@ fun UploadQrPayStatementScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Automatically log expense with screenshots of your e-Wallet/QR Pay transaction statements.",
+                    text = "Automatically log expense with an image of your receipt or screenshots of your e-Wallet/QR Pay transaction statements.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = colorResource(R.color.navyblue)
 
@@ -130,7 +130,7 @@ fun UploadQrPayStatementScreen(
                 Column (
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(colorResource(R.color.lightblue), RoundedCornerShape(12.dp))
+                        .background(colorResource(R.color.navyblue), RoundedCornerShape(12.dp))
                         .padding(vertical = 16.dp, horizontal = 16.dp),
                 ){
 
@@ -138,28 +138,33 @@ fun UploadQrPayStatementScreen(
                         text="INSTRUCTIONS",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = Color.White
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text="1. Screenshot your transaction statement in your e-Wallet/QR Pay applications.",
-                        style = MaterialTheme.typography.bodyLarge
+                        text="1. Screenshot your transaction statement in your e-Wallet/QR Pay applications OR\n" +
+                                "snap an image of your receipt",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text="2. Upload your screenshot below.",
-                        style = MaterialTheme.typography.bodyLarge
+                        text="2. Upload your image below.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text="3. Click 'EXTRACT'.",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
                     )
 
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
-                    text = "UPLOAD TRANSACTION STATEMENT",
+                    text = "UPLOAD RECEIPT/TRANSACTION STATEMENT",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(R.color.navyblue)

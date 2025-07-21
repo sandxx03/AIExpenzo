@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -51,6 +52,7 @@ import androidx.navigation.NavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.AppTopBar
 import com.example.aiexpenzo.components.BottomNavBar
+import com.example.aiexpenzo.components.CategoriesBarChart
 import com.example.aiexpenzo.components.EditValueDialog
 import com.example.aiexpenzo.data.constants.CategoryIconMap
 import com.example.aiexpenzo.viewmodel.AuthViewModel
@@ -77,23 +79,20 @@ fun DashboardScreen(
     var selectedMonth by remember { mutableStateOf(Calendar.getInstance()) }
     val currentMonth = selectedMonth.get(Calendar.MONTH)
     val currentYear = selectedMonth.get(Calendar.YEAR)
-
     val monthlyIncome by remember(user, selectedMonth){
         derivedStateOf {
             authViewModel.getCurrentMonthIncome(currentMonth, currentYear)
         }
-
     }
-
     val monthlyBudget by remember(user, selectedMonth){
         derivedStateOf {
             authViewModel.getCurrentMonthBudget(currentMonth, currentYear)
         }
-
     }
     val moneyOut = expenseViewModel.getTotalExpensesForMonth(currentMonth, currentYear)
     val currentUsed = moneyOut
     val topCategories = expenseViewModel.getTopCategories(currentMonth,currentYear)
+    val allCategories = expenseViewModel.getAllCategories(currentMonth, currentYear)
 
     // Ratios for progress bar
     val monthlyIncomeRatio = if (monthlyIncome > 0) ((monthlyIncome - moneyOut) / monthlyIncome).coerceIn(0f, 1f) else 0f // moneyIn
@@ -123,7 +122,7 @@ fun DashboardScreen(
 
 
     Scaffold (
-        topBar = { AppTopBar(title = "Dashboard") },
+        topBar = { AppTopBar(title = "Home") },
         bottomBar = { BottomNavBar(navController)}
 
     ){ innerPadding ->
@@ -328,7 +327,7 @@ fun DashboardScreen(
                 // Monthly Budget Card
                 Column(
                     modifier = Modifier.fillMaxSize()
-                        .padding(start = 24.dp, end = 24.dp, bottom = 10.dp)
+                        .padding(start = 24.dp, end = 24.dp)
                 ) {
 
                     Card(
@@ -336,7 +335,7 @@ fun DashboardScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                         colors = CardDefaults.cardColors(containerColor = colorResource(R.color.lightblue)),
                         modifier = Modifier.fillMaxWidth()
-                            .padding(bottom = 10.dp)
+                            .padding(bottom = 8.dp)
                     ) {
                         Row(
                             Modifier.padding(16.dp),
@@ -422,102 +421,111 @@ fun DashboardScreen(
                     }
 
                 }
-
-                // Card background for lower section
-                Box(
+                // Top 3 Categories Card
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    colors = CardDefaults.cardColors(containerColor = colorResource(R.color.navyblue)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
-                        .background(
-                            colorResource(R.color.navyblue),
-                            shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
-                        )
-                        .padding(horizontal = 20.dp),
-                    contentAlignment = Alignment.TopCenter
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
                 ) {
-
                     Column(
-                        modifier = Modifier.fillMaxSize()
-                            .padding(top = 30.dp, start = 20.dp, end = 20.dp, bottom = 10.dp)
+                        modifier = Modifier.padding(20.dp)
                     ) {
                         Text(
-
-                            text = "This Month's Most Spent Categories",
+                            text = "This Month's Top 3 Categories",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 19.sp,
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
+                        if (topCategories.isEmpty()) {
+                            Text(
+                                text = "No expenses added yet.",
+                                color = Color.LightGray,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
-
-                        // Top 3 categories with placeholders
-
-                        Column(Modifier.fillMaxWidth()
-                            .padding(top = 20.dp)) {
-                            if (topCategories.isEmpty()){
-                                Column(
-                                    modifier = Modifier.fillMaxWidth()
-                                        .padding(vertical = 40.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
+                        } else {
+                            topCategories.forEach { cat ->
+                                Row(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    val iconRes = CategoryIconMap[cat.title] ?: R.drawable.ic_other
 
+                                    Image(
+                                        painter = painterResource(id = iconRes),
+                                        contentDescription = cat.title,
+                                        modifier = Modifier
+                                            .size(50.dp)
+                                            .padding(8.dp),
+                                        colorFilter = ColorFilter.tint(colorResource(R.color.lightblue))
+                                    )
+                                    Spacer(Modifier.width(12.dp))
+                                    Column(
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text(cat.title, color = Color.White, fontWeight = FontWeight.Bold)
+                                    }
                                     Text(
-                                        text = "No expenses added yet.",
-                                        color = Color.LightGray,
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Medium
+                                        "RM${String.format("%.2f", cat.amount)}",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp
                                     )
                                 }
-                            } else{
-
-                                topCategories.forEach{ cat ->
-                                    Row(
-                                        Modifier.fillMaxWidth()
-                                            .padding(vertical = 10.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-
-                                        val iconRes = CategoryIconMap[cat.title] ?: R.drawable.ic_other
-
-                                        Image(
-                                            painter = painterResource(id = iconRes),
-                                            contentDescription = cat.title,
-                                            modifier = Modifier
-                                                .size(55.dp)
-                                                .background(Color.Transparent,
-                                                    shape = RoundedCornerShape(10.dp))
-                                                .padding(8.dp),
-                                            colorFilter = ColorFilter.tint(colorResource(R.color.lightblue))
-                                        )
-                                        Spacer(Modifier.width(12.dp))
-                                        Column(
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            Text(cat.title, color = Color.White, fontWeight = FontWeight.Bold)
-
-                                        }
-                                        Text(
-                                            "RM${String.format("%.2f", cat.amount)}",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 15.sp,
-                                            modifier = Modifier.padding(start = 4.dp)
-                                        )
-
-                                    }
-                                    Divider(color = Color.White.copy(alpha = 0.2f))
-                                }
+                                Divider(color = Color.White.copy(alpha = 0.2f))
                             }
-
                         }
-                        Spacer(modifier = Modifier.height(70.dp))
-
                     }
-
                 }
+                // Bar Chart Card
+                Card (
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.LightGray),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(top = 4.dp, bottom = 12.dp)
+                ){
+                    Column(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        Text(
+                            text = "This Month's Category Spendings",
+                            color = colorResource(R.color.navyblue),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 19.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
+                        if (allCategories.isNotEmpty()) {
+                            CategoriesBarChart(
+                                categories = allCategories,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(300.dp)
+                            )
+
+                        } else {
+                            Text(
+                                text = "No data to display.",
+                                color = colorResource(R.color.navyblue),
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
             }
-
         }
     }
-
 }

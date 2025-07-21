@@ -9,10 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.TextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aiexpenzo.R
@@ -30,6 +33,7 @@ import com.example.aiexpenzo.R
 @Composable
 fun PopupPromptInput(
     promptText: String,
+    promptDesc: String,
     placeholderText: String,
     errorMessage: String? = null,
     onConfirm:(Float) -> Unit,
@@ -45,12 +49,23 @@ fun PopupPromptInput(
     ) {
         Column(modifier = Modifier
             .padding(24.dp)
-            .background(colorResource(R.color.lightblue)),
+            .background(colorResource(R.color.lightblue), RoundedCornerShape(20.dp)),
             horizontalAlignment = Alignment.CenterHorizontally,
 
 
         ){
-            Text(text = promptText, fontSize = 18.sp, modifier = Modifier.padding(24.dp))
+            Text(text = promptText,
+                fontSize = 18.sp,
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 14.dp),
+                fontWeight = FontWeight.Bold)
+
+            Text(text = promptDesc,
+                fontSize = 15.sp,
+                modifier = Modifier
+                    .padding(vertical = 5.dp),
+                textAlign = TextAlign.Start)
             Spacer(modifier = Modifier.height(5.dp))
 
             TextField(
@@ -67,7 +82,13 @@ fun PopupPromptInput(
                 modifier = Modifier.fillMaxWidth()
                     .padding(horizontal = 24.dp)
                 ,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(15.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White
+                )
+
             )
 
             // error message
@@ -89,7 +110,7 @@ fun PopupPromptInput(
                     if (value != null && value > 0f){
                         onConfirm(value)
                     } else{
-                        // TODO : show error message
+                        // error message
                     }
                 },
                 modifier = Modifier.fillMaxWidth(0.5f)
@@ -97,7 +118,13 @@ fun PopupPromptInput(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.navyblue),
                     contentColor = colorResource(R.color.lightblue)
-                )
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 8.dp,
+                    pressedElevation = 12.dp,
+                    focusedElevation = 4.dp
+                ),
+                shape = RoundedCornerShape(10.dp)
 
             ) {
                 Text("CONFIRM", fontWeight = FontWeight.Bold)
@@ -107,7 +134,18 @@ fun PopupPromptInput(
 
     }
 
+}
 
+@Preview(showBackground = true)
+@Composable
+fun PromptScreenPreview(){
+    PopupPromptInput(
+        promptText = "Please enter your monthly income.",
+        promptDesc = "(e.g. salary, allowance, savings)",
+        placeholderText = "0.00",
+        errorMessage = "Error",
+        onConfirm = {},
+    )
 }
 
 

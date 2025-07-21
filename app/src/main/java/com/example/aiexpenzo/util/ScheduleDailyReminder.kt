@@ -7,6 +7,7 @@ import androidx.work.WorkManager
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
+// schedules daily WorkManager job at 9AM
 fun scheduleDailyReminder (context: Context){
     val delay = calculateDelayUntil(hour = 9)
 
@@ -18,6 +19,7 @@ fun scheduleDailyReminder (context: Context){
         .addTag("daily_reminder")
         .build()
 
+    // enqueue - to avoid duplication
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
         "daily_expense_reminder",
         ExistingPeriodicWorkPolicy.REPLACE,
@@ -25,11 +27,12 @@ fun scheduleDailyReminder (context: Context){
     )
 }
 
+// Cancels the scheduled daily reminder
 fun cancelDailyReminder(context: Context){
     WorkManager.getInstance(context).cancelUniqueWork("daily_expense_reminder")
 }
 
-
+// Calculates how many milliseconds remain until next specified hour (9AM)
 fun calculateDelayUntil(hour: Int): Long {
     val now = Calendar.getInstance()
     val target = Calendar.getInstance().apply {

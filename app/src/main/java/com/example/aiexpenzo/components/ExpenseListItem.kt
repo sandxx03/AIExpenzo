@@ -43,7 +43,7 @@ fun ExpenseListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(colorResource(R.color.lightblue))
+            .background(colorResource(R.color.lightblue).copy(alpha = 0.3f))
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .clickable { onClick() }
     ){

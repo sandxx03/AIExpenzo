@@ -140,7 +140,14 @@ fun SignUpScreen(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.navyblue),
                     contentColor = colorResource(R.color.white)
-                ) ){
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 8.dp,
+                    pressedElevation = 12.dp,
+                    focusedElevation = 4.dp
+                ),
+
+            ){
                 Text("SIGN UP", color = colorResource(R.color.white), fontWeight = FontWeight.Bold)
             }
 

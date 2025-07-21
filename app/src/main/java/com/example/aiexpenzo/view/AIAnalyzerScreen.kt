@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -96,29 +99,41 @@ fun AIAnalyzerScreen(
 
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Discover your expense breakdown, spending patterns, and spender type, along with tips to help you save smarter.",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = colorResource(R.color.navyblue),
-                    textAlign = TextAlign.Justify,
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    colors = CardDefaults.cardColors(containerColor = colorResource(R.color.lightblue)),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp, bottom = 8.dp)
+                        .padding(horizontal = 14.dp)
+                        .padding(top = 4.dp, bottom = 12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)  // Inner padding to space text from edges
+                    ) {
+                        Text(
+                            text = "Discover your expense breakdown, spending patterns, and spender type, along with tips to help you save smarter.",
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            color = colorResource(R.color.navyblue),
+                            textAlign = TextAlign.Justify,
 
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "We recommend logging at least 7 days of expense for a more insightful analysis.",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = colorResource(R.color.navyblue),
-                    textAlign = TextAlign.Justify,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp, bottom = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "We recommend logging at least 7 days of expense for a more insightful analysis.",
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                            color = colorResource(R.color.navyblue),
+                            textAlign = TextAlign.Justify,
 
-                )
+                        )
+
+                    }
+
+                }
+
                 Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
@@ -157,7 +172,7 @@ fun AIAnalyzerScreen(
 
                     }
                 }
-                Spacer(modifier = Modifier.height(80.dp))
+                Spacer(modifier = Modifier.height(70.dp))
 
                 if (isLoading) {
                     Box(

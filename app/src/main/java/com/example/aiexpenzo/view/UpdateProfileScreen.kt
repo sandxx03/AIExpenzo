@@ -1,7 +1,6 @@
 package com.example.aiexpenzo.view
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +19,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,7 +51,7 @@ fun UpdateProfileScreen(
 
     val user by viewModel.currentUser.collectAsState()
     var name by remember { mutableStateOf(user?.name ?: "") }
-    var email by remember { mutableStateOf(user?.email ?: "") }
+    val email by remember { mutableStateOf(user?.email ?: "") }
     var newPassword by remember { mutableStateOf("") }
     var confirmNewPassword by remember { mutableStateOf("") }
     var showPasswordDialog by remember { mutableStateOf(false) }
@@ -82,7 +82,6 @@ fun UpdateProfileScreen(
                     onClick = {
                         viewModel.updateProfile(
                             newName = name,
-                            newEmail = email,
                             newPassword = newPassword,
                             currentPassword = currentPasswordInDialog,
                             onSuccess = {
@@ -137,7 +136,7 @@ fun UpdateProfileScreen(
                 Spacer(Modifier.width((6.dp)))
 
                 Text(
-                    text = "Update Profile",
+                    text = "Back to Profile",
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp,
                     color = colorResource(R.color.navyblue)
@@ -159,8 +158,16 @@ fun UpdateProfileScreen(
                 )
                 OutlinedTextField(
                     value = email,
-                    onValueChange = {email = it},
+                    onValueChange = {},
+                    enabled = false,
+                    readOnly = true,
                     label = {Text("Email")},
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = Color.Gray,
+                        disabledBorderColor = Color.LightGray,
+                        disabledLabelColor = Color.Gray,
+                        disabledPlaceholderColor = Color.Gray
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
 

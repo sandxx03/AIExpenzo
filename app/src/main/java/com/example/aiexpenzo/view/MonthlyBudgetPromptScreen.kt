@@ -21,25 +21,23 @@ fun MonthlyBudgetPromptScreen(
     var errorMessage by remember { mutableStateOf<String?>(null)}
 
     PopupPromptInput(
-        promptText = "Please enter the monthly budget goal that you want to achieve. (You can change this later)",
+        promptText = "How much do you plan to spend in a month? (monthly budget)",
+        promptDesc = "(You can adjust this later.)",
         placeholderText = "0.00",
         errorMessage = errorMessage,
-        onConfirm = {budgetStr ->
-            val budget = budgetStr.toFloat() ?: 0f
-            if(viewModel.isBudgetValid(month, year,budget)){
-                viewModel.setMonthlyBudget(month, year,budget)
-                //Navigate to Dashboard and clear prompt screens from backstack
-                navController.navigate("dashboard"){
-                    popUpTo("prompt_monthlyIncome"){inclusive = true}
-                    launchSingleTop = true
-                }
-
-            }else{
-                val income = viewModel.currentUser.value?.monthlyIncome ?: 0f
+        onConfirm = { budget ->
+            if (budget <= 0f) {
+                errorMessage = "Please enter a valid amount."
+            } else if (!viewModel.isBudgetValid(month, year, budget)) {
+                val income = viewModel.getCurrentMonthIncome(month, year)
                 errorMessage = "Budget cannot exceed monthly income ($${"%.2f".format(income)})"
+            } else {
+                errorMessage = null
+                viewModel.setMonthlyBudget(month, year, budget)
+                navController.navigate("dashboard") {
+                    popUpTo("prompt_monthlyIncome") { inclusive = true }
+                }
             }
-
-
         }
     )
 

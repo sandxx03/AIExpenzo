@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -60,16 +61,24 @@ fun OnboardingScreen(navController: NavController) {
                 .statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.height(50.dp))
+            Text(
+                text = "Welcome to AIExpenzo!",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(R.color.navyblue),
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
 
             Text(
                 text = "Get Started!",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black
+                color = colorResource(R.color.navyblue)
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             HorizontalPager(
                 count = pages.size,

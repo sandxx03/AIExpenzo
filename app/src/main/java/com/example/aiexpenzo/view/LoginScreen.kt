@@ -126,11 +126,15 @@ fun LoginScreen(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.navyblue),
                     contentColor = Color.White
-                ) ){
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 8.dp,
+                    pressedElevation = 12.dp,
+                    focusedElevation = 4.dp
+                ),
+            ){
                 Text("LOGIN", color = Color.White, fontWeight = FontWeight.Bold)
             }
-
-
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -159,6 +163,7 @@ fun LoginScreen(
 
             val user = viewModel.currentUser.value
             if (user != null){
+                // gets current month
                 val calendar = Calendar.getInstance()
                 val month = calendar.get(Calendar.MONTH)
                 val year = calendar.get(Calendar.YEAR)
@@ -177,9 +182,7 @@ fun LoginScreen(
                         popUpTo("login") { inclusive = true }
                     }
                 }
-
             }
-
             viewModel.resetAuthStatus()
         }
     }

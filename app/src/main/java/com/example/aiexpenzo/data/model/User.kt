@@ -1,6 +1,6 @@
 package com.example.aiexpenzo.data.model
 
-// Special class to hold user data
+// Full user data for Firestore
 data class User(
     val uid: String = "",
     val name: String = "",

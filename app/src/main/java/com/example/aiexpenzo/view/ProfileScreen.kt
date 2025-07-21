@@ -49,7 +49,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 15.dp)
+                .padding(horizontal = 24.dp)
         ){
             Spacer(modifier = Modifier.height(30.dp))
 
@@ -66,7 +66,12 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .height(60.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp,
+                        focusedElevation = 4.dp
+                    ),
                 ) {
                     Row (
                         horizontalArrangement = Arrangement.Start,
@@ -94,7 +99,12 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .height(60.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp,
+                        focusedElevation = 4.dp
+                    ),
                 ) {
                     Row (
                         horizontalArrangement = Arrangement.Start,
@@ -118,7 +128,12 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .height(60.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.lightblue)),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp,
+                        focusedElevation = 4.dp
+                    ),
                 ) {
                     Row (
                         horizontalArrangement = Arrangement.Start,
@@ -144,7 +159,13 @@ fun ProfileScreen(
                                   popUpTo(0)
                               }
                       },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.darkred)),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.darkred)),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp,
+                        focusedElevation = 4.dp
+                    ),
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 50.dp)
