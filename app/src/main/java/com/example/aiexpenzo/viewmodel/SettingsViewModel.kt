@@ -13,7 +13,7 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
 
     val reminderEnabled = reminderPrefs.reminderEnabledFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
+    //saves whether reminder should be ON or OFF in persistent storage
     fun setReminder(enabled: Boolean){
         viewModelScope.launch {
             reminderPrefs.setReminderEnabled(enabled)

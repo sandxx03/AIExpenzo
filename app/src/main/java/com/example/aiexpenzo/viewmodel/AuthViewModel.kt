@@ -206,7 +206,6 @@ class AuthViewModel:ViewModel() {
                     onError("User not authenticated")
                     return@launch
                 }
-
                 // Update password if changed
                 if (newPassword.isNotEmpty()) {
                     try {
@@ -214,9 +213,7 @@ class AuthViewModel:ViewModel() {
                     } catch (e: Exception){
                         onError("Password update failed: ${e.message ?: "Unknown error"}")
                     }
-
                 }
-
                 // Update name in Firestore
                 try {
                     repo.updateUserName(newName)

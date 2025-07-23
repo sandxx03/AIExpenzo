@@ -30,7 +30,7 @@ fun MonthlyBudgetPromptScreen(
                 errorMessage = "Please enter a valid amount."
             } else if (!viewModel.isBudgetValid(month, year, budget)) {
                 val income = viewModel.getCurrentMonthIncome(month, year)
-                errorMessage = "Budget cannot exceed monthly income ($${"%.2f".format(income)})"
+                errorMessage = "Budget cannot exceed monthly income (RM${"%.2f".format(income)})"
             } else {
                 errorMessage = null
                 viewModel.setMonthlyBudget(month, year, budget)

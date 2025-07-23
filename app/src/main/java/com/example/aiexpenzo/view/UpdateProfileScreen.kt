@@ -49,13 +49,13 @@ fun UpdateProfileScreen(
     viewModel: AuthViewModel,
 ){
 
-    val user by viewModel.currentUser.collectAsState()
-    var name by remember { mutableStateOf(user?.name ?: "") }
-    val email by remember { mutableStateOf(user?.email ?: "") }
-    var newPassword by remember { mutableStateOf("") }
-    var confirmNewPassword by remember { mutableStateOf("") }
-    var showPasswordDialog by remember { mutableStateOf(false) }
-    var currentPasswordInDialog by remember { mutableStateOf("") }
+    val user by viewModel.currentUser.collectAsState()  //observes latest logged-in user data
+    var name by remember { mutableStateOf(user?.name ?: "") }   // holds current editable username
+    val email by remember { mutableStateOf(user?.email ?: "") } // holds user's email address (read only)
+    var newPassword by remember { mutableStateOf("") }  // store input for new password
+    var confirmNewPassword by remember { mutableStateOf("") }   // store input for new password confirmation
+    var showPasswordDialog by remember { mutableStateOf(false) }    //Manage whether the password confirmation dialog appears.
+    var currentPasswordInDialog by remember { mutableStateOf("") }  //Store the entered current password
 
     val context = LocalContext.current
 

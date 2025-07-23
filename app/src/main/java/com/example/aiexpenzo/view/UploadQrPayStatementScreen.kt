@@ -67,6 +67,7 @@ fun UploadQrPayStatementScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var selectedImageUri by remember { mutableStateOf<Uri?>(null)}
+    // image picker
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->

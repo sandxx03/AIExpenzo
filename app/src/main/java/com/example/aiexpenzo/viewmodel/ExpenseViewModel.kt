@@ -153,7 +153,6 @@ class ExpenseViewModel: ViewModel() {
                 }
                 cal.get(Calendar.MONTH) == month && cal.get(Calendar.YEAR) == year
             }
-
             return filtered.groupBy { it.category }
                 .map { (cat, items) ->
                     val latestDate = items.maxByOrNull { it.transactionDate.time }?.transactionDate ?: 0L
@@ -170,9 +169,7 @@ class ExpenseViewModel: ViewModel() {
             val cal = Calendar.getInstance().apply { time = expense.transactionDate }
             cal.get(Calendar.MONTH) == month && cal.get(Calendar.YEAR) == year
         }
-
         val groupedExpenses = expensesThisMonth.groupBy { it.category }
-
         return EXPENSE_CATEGORIES.map { categoryName ->
             val expensesInCategory = groupedExpenses[categoryName] ?: emptyList()
 
@@ -184,7 +181,6 @@ class ExpenseViewModel: ViewModel() {
             } else {
                 "-"
             }
-
             CategorySpend(
                 title = categoryName,
                 amount = totalAmount,
