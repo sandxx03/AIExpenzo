@@ -32,12 +32,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.aiexpenzo.R
 import com.example.aiexpenzo.components.AiResponseCard
 import com.example.aiexpenzo.components.AppTopBar
@@ -198,15 +196,4 @@ fun AIAnalyzerScreen(
             }
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun AiAnalyzerScreenPreview(){
-    AIAnalyzerScreen(
-        navController = rememberNavController(),
-        aiViewModel = AiAnalyzerViewModel(),
-        expenseViewModel = ExpenseViewModel()
-    )
 }

@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aiexpenzo.R
@@ -135,17 +134,3 @@ fun PopupPromptInput(
     }
 
 }
-
-@Preview(showBackground = true)
-@Composable
-fun PromptScreenPreview(){
-    PopupPromptInput(
-        promptText = "Please enter your monthly income.",
-        promptDesc = "(e.g. salary, allowance, savings)",
-        placeholderText = "0.00",
-        errorMessage = "Error",
-        onConfirm = {},
-    )
-}
-
-

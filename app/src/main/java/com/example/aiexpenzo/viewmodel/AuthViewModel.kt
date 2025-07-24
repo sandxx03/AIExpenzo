@@ -156,7 +156,6 @@ class AuthViewModel:ViewModel() {
     }
 
     // Sets monthly budget in Firestore and updates local state
-    // Function: Set Monthly Budget
     fun setMonthlyBudget(month: Int, year: Int, budget: Float){
         viewModelScope.launch {
             _isLoading.value = true

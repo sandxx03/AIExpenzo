@@ -190,15 +190,3 @@ fun SignUpScreen(
     }
 
 }
-
-
-/*
-@Preview(showBackground=true)
-@Composable
-fun SignUpScreenPreview(){
-    AIExpenzoTheme {
-        SignUpScreen()
-    }
-}
-
-*/

@@ -24,7 +24,7 @@ fun RequestNotificationPermission(){
     )
 
     LaunchedEffect(Unit) {
-        // From Android 13 (Tiramisu) onwards, notification permission must be explicitly request
+        // From Android 13 (Tiramisu) onwards, notification permission must explicitly request
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     context,

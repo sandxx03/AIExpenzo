@@ -61,7 +61,7 @@ class ExpenseViewModel: ViewModel() {
             _isLoading.value = true
 
             try {
-                // Firestore listener will eventually sync and update
+                // Firestore listener will sync and update
                 repo.addExpense(expense)
             } finally {
                 _isLoading.value = false

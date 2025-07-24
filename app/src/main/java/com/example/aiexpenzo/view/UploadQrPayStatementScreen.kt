@@ -300,12 +300,3 @@ fun UploadQrPayStatementScreen(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun UploadScreenPreview(){
-    UploadQrPayStatementScreen(
-        navController = rememberNavController(),
-        viewModel = QRStatementViewModel()
-    )
-}
